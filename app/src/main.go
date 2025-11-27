@@ -21,5 +21,6 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Printf("[INFO] ✅ bw command is installed! (path: %s)\n", path)
+
 }
 
