@@ -1,16 +1,12 @@
 # Todo
 
-## v0.4.0
-
-- [ ] 単体テストの実装
-
 ## v0.5.0
 
 - [ ] brew tapでの、配布。まずはmacOSビルドのみ
+- [ ] ローカルのmacOSで実行されるかを確認
 
 ## untill v1.0.0
 
-- [ ] ソースコード内へのバージョン指定
 - [ ] local/develop/staging/productionなどの、各環境への対応
 
 
