@@ -1,0 +1,19 @@
+services:
+  golang:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bwenv-golang-dev
+    volumes:
+      # ソースコードをマウント（ホットリロード対応）
+      - .:/app
+      # Goモジュールキャッシュを永続化
+      - go-mod-cache:/go/pkg/mod
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    command: go run src/main.go
+
+volumes:
+  go-mod-cache:
+
