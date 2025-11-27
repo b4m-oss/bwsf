@@ -4,3 +4,7 @@ Thumbs.db
 worktree/
 
 app/.config
+
+.env
+.env.*
+!.env.*.example
