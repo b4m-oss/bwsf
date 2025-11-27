@@ -1,0 +1,98 @@
+name: Bug Report
+description: Report a bug to help us improve bwenv
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug!
+        Please fill out the form below to help us understand and fix the issue.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Describe the bug...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Run `bwenv ...`
+        2. ...
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: Describe what you expected...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Describe what actually happened...
+    validations:
+      required: true
+
+  - type: input
+    id: bwenv-version
+    attributes:
+      label: bwenv Version
+      description: Run `bwenv -v` to get the version
+      placeholder: "e.g., 0.10.0"
+    validations:
+      required: true
+
+  - type: input
+    id: bw-version
+    attributes:
+      label: Bitwarden CLI Version
+      description: Run `bw --version` to get the version
+      placeholder: "e.g., 2024.9.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      options:
+        - macOS
+        - Linux (Ubuntu)
+        - Linux (Debian)
+        - Linux (Other)
+        - Windows (WSL)
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error Logs
+      description: If applicable, paste any error messages or logs here.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here.
+    validations:
+      required: false
+
