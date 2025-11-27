@@ -1,5 +1,9 @@
 # Archived TODOs
 
+# v0.9.1
+
+- ✅ Bugfix: プルリク作成時に、テストが発生しない
+
 # v0.9.0
 
 - ✅ local/develop/staging/productionなどの、各環境への対応
