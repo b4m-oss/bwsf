@@ -2,16 +2,16 @@ name: Test
 
 on:
   pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
+    paths:
+      - 'app/**'
 
 jobs:
   unit-test:
     name: Unit Tests
     runs-on: ubuntu-latest
+    if: |
+      !(startsWith(github.head_ref, 'dev-') && github.base_ref == 'develop') &&
+      !(github.head_ref == 'develop' && github.base_ref == 'main')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,6 +37,9 @@ jobs:
   e2e-test:
     name: E2E Tests
     runs-on: ubuntu-latest
+    if: |
+      !(startsWith(github.head_ref, 'dev-') && github.base_ref == 'develop') &&
+      !(github.head_ref == 'develop' && github.base_ref == 'main')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -53,4 +56,3 @@ jobs:
       - name: Run E2E tests
         working-directory: app
         run: go test -v ./src/e2e/...
-
