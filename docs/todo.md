@@ -1,10 +1,6 @@
 # Todo
 
-# v0.8.0
-
-- [ ] E2Eテスト（Vaultwarden）
-
-# v0.8.0
+# v0.9.0
 
 - [ ] local/develop/staging/productionなどの、各環境への対応
 - [ ] bwコマンド依存からの脱却
@@ -16,3 +12,4 @@
 - [ ] dotenvsディレクトリの別名設定
 - [ ] enhance: 毎回マスターパスワードを入れるのがめんどくさい
 - [ ] Windows版ビルド＆Chocolaty公開
+- [ ] E2Eテスト（Vaultwarden）

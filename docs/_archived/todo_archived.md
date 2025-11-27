@@ -1,5 +1,9 @@
 # Archived TODOs
 
+# v0.8.0
+
+- ✅ E2Eテスト（モック）
+
 ## v0.7.0
 
 - ✅ enhance: stdoutの待機でアニメーションをつける
