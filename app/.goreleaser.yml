@@ -1,0 +1,48 @@
+version: 2
+
+project_name: bwenv
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - main: ./src/main.go
+    binary: bwenv
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+
+archives:
+  - formats:
+      - tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+brews:
+  - repository:
+      owner: b4m-oss
+      name: tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    homepage: https://github.com/b4m-oss/bwenv
+    description: CLI tool to manage .env files with Bitwarden
+    license: MIT
+    install: |
+      bin.install "bwenv"
+    test: |
+      system "#{bin}/bwenv", "--help"
