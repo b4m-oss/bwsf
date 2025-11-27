@@ -1,0 +1,255 @@
+package utils
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"os/exec"
+	"strings"
+)
+
+// NoteItem represents a Bitwarden note item structure
+type NoteItem struct {
+	Type       int        `json:"type"`
+	Name       string     `json:"name"`
+	Notes      string     `json:"notes"`
+	FolderID   string     `json:"folderId"`
+	SecureNote SecureNote `json:"secureNote"`
+}
+
+// SecureNote represents the secure note type
+type SecureNote struct {
+	Type int `json:"type"` // 0 = Text
+}
+
+// FullItem represents a full Bitwarden item (for getting item details)
+type FullItem struct {
+	ID         string     `json:"id"`
+	Name       string     `json:"name"`
+	Type       int        `json:"type"`
+	Notes      string     `json:"notes"`
+	FolderID   string     `json:"folderId"`
+	SecureNote SecureNote `json:"secureNote"`
+}
+
+// GetItemByName finds an item by name in the specified folder
+func GetItemByName(folderID, itemName string) (*FullItem, error) {
+	// Check if bw command exists
+	_, err := exec.LookPath("bw")
+	if err != nil {
+		return nil, fmt.Errorf("bw command is not installed")
+	}
+
+	// Execute bw list items command with folder filter
+	cmd := exec.Command("bw", "list", "items", "--folderid", folderID)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		errorMsg := strings.TrimSpace(string(output))
+		if errorMsg == "" {
+			errorMsg = err.Error()
+		}
+		return nil, fmt.Errorf("failed to list items: %s", errorMsg)
+	}
+
+	// Parse JSON output
+	var items []FullItem
+	outputStr := strings.TrimSpace(string(output))
+	if outputStr == "" {
+		return nil, fmt.Errorf("no output from bw list items command")
+	}
+
+	// Check if Bitwarden CLI is locked
+	if strings.Contains(outputStr, "Master password") || strings.Contains(outputStr, "master password") {
+		return nil, ErrBitwardenLocked
+	}
+
+	// Check if output looks like JSON
+	if !strings.HasPrefix(outputStr, "[") && !strings.HasPrefix(outputStr, "{") {
+		return nil, fmt.Errorf("unexpected output from bw list items (not JSON): %s", outputStr)
+	}
+
+	if err := json.Unmarshal([]byte(outputStr), &items); err != nil {
+		return nil, fmt.Errorf("failed to parse items JSON (output: %s): %w", outputStr, err)
+	}
+
+	// Find item by name
+	for _, item := range items {
+		if item.Name == itemName {
+			return &item, nil
+		}
+	}
+
+	return nil, nil // Item not found, but no error
+}
+
+// CreateNoteItem creates a new note item in Bitwarden
+func CreateNoteItem(folderID, name, notes string) error {
+	// Check if bw command exists
+	_, err := exec.LookPath("bw")
+	if err != nil {
+		return fmt.Errorf("bw command is not installed")
+	}
+
+	// Create note item structure
+	item := NoteItem{
+		Type:     2, // Secure Note type
+		Name:     name,
+		Notes:    notes,
+		FolderID: folderID,
+		SecureNote: SecureNote{
+			Type: 0, // Text type
+		},
+	}
+
+	// Marshal to JSON
+	itemJSON, err := json.Marshal(item)
+	if err != nil {
+		return fmt.Errorf("failed to marshal item to JSON: %w", err)
+	}
+
+	// Get template and modify it
+	// First, get the template
+	templateCmd := exec.Command("bw", "get", "template", "item")
+	templateOutput, err := templateCmd.CombinedOutput()
+	if err != nil {
+		// If template command fails, try direct creation
+		return createItemDirectly(itemJSON)
+	}
+
+	// Parse template and modify
+	var template map[string]interface{}
+	if err := json.Unmarshal(templateOutput, &template); err != nil {
+		// If parsing fails, try direct creation
+		return createItemDirectly(itemJSON)
+	}
+
+	// Update template with our data
+	template["type"] = 2
+	template["name"] = name
+	template["notes"] = notes
+	template["folderId"] = folderID
+	template["secureNote"] = map[string]interface{}{
+		"type": 0,
+	}
+
+	// Marshal modified template
+	modifiedJSON, err := json.Marshal(template)
+	if err != nil {
+		return fmt.Errorf("failed to marshal modified template: %w", err)
+	}
+
+	// Encode and create item
+	return createItemWithEncode(modifiedJSON)
+}
+
+// createItemDirectly creates item by piping JSON directly
+func createItemDirectly(itemJSON []byte) error {
+	cmd := exec.Command("bw", "create", "item")
+	cmd.Stdin = bytes.NewReader(itemJSON)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		errorMsg := strings.TrimSpace(string(output))
+		if errorMsg == "" {
+			errorMsg = err.Error()
+		}
+		return fmt.Errorf("failed to create item: %s", errorMsg)
+	}
+	return nil
+}
+
+// createItemWithEncode creates item using encode command
+func createItemWithEncode(itemJSON []byte) error {
+	// Encode the JSON
+	encodeCmd := exec.Command("bw", "encode")
+	encodeCmd.Stdin = bytes.NewReader(itemJSON)
+	encodedOutput, err := encodeCmd.Output()
+	if err != nil {
+		// If encode fails, try direct creation
+		return createItemDirectly(itemJSON)
+	}
+
+	// Create item with encoded data
+	createCmd := exec.Command("bw", "create", "item", strings.TrimSpace(string(encodedOutput)))
+	output, err := createCmd.CombinedOutput()
+	if err != nil {
+		errorMsg := strings.TrimSpace(string(output))
+		if errorMsg == "" {
+			errorMsg = err.Error()
+		}
+		return fmt.Errorf("failed to create item: %s", errorMsg)
+	}
+	return nil
+}
+
+// UpdateNoteItem updates an existing note item's notes field
+func UpdateNoteItem(itemID, notes string) error {
+	// Check if bw command exists
+	_, err := exec.LookPath("bw")
+	if err != nil {
+		return fmt.Errorf("bw command is not installed")
+	}
+
+	// Get the existing item
+	getCmd := exec.Command("bw", "get", "item", itemID)
+	output, err := getCmd.CombinedOutput()
+	if err != nil {
+		errorMsg := strings.TrimSpace(string(output))
+		if errorMsg == "" {
+			errorMsg = err.Error()
+		}
+		return fmt.Errorf("failed to get item: %s", errorMsg)
+	}
+
+	// Parse existing item
+	var item map[string]interface{}
+	outputStr := strings.TrimSpace(string(output))
+	if outputStr == "" {
+		return fmt.Errorf("no output from bw get item command")
+	}
+
+	if err := json.Unmarshal([]byte(outputStr), &item); err != nil {
+		return fmt.Errorf("failed to parse item JSON: %w", err)
+	}
+
+	// Update notes field
+	item["notes"] = notes
+
+	// Marshal updated item
+	updatedJSON, err := json.Marshal(item)
+	if err != nil {
+		return fmt.Errorf("failed to marshal updated item: %w", err)
+	}
+
+	// Encode the JSON using bw encode
+	encodeCmd := exec.Command("bw", "encode")
+	encodeCmd.Stdin = bytes.NewReader(updatedJSON)
+	encodedOutput, err := encodeCmd.Output()
+	if err != nil {
+		// If encode fails, try direct edit (for compatibility)
+		editCmd := exec.Command("bw", "edit", "item", itemID)
+		editCmd.Stdin = bytes.NewReader(updatedJSON)
+		editOutput, err := editCmd.CombinedOutput()
+		if err != nil {
+			errorMsg := strings.TrimSpace(string(editOutput))
+			if errorMsg == "" {
+				errorMsg = err.Error()
+			}
+			return fmt.Errorf("failed to update item: %s", errorMsg)
+		}
+		return nil
+	}
+
+	// Edit the item with encoded data
+	encodedStr := strings.TrimSpace(string(encodedOutput))
+	editCmd := exec.Command("bw", "edit", "item", itemID, encodedStr)
+	editOutput, err := editCmd.CombinedOutput()
+	if err != nil {
+		errorMsg := strings.TrimSpace(string(editOutput))
+		if errorMsg == "" {
+			errorMsg = err.Error()
+		}
+		return fmt.Errorf("failed to update item: %s", errorMsg)
+	}
+
+	return nil
+}

@@ -81,7 +81,7 @@ func getDotenvsFolderIDWithUnlock() (string, error) {
 						return "", fmt.Errorf("failed to login Bitwarden CLI: %s", loginErrorMsg)
 					}
 					fmt.Println("[INFO] ✅ Bitwarden CLI logged in successfully")
-					
+
 					// After login, try unlock again
 					success, errorMsg = utils.BwUnlock(masterPassword)
 					if !success {
@@ -154,7 +154,7 @@ func listItemsInFolderWithUnlock(folderID string) ([]utils.Item, error) {
 						return nil, fmt.Errorf("failed to login Bitwarden CLI: %s", loginErrorMsg)
 					}
 					fmt.Println("[INFO] ✅ Bitwarden CLI logged in successfully")
-					
+
 					// After login, try unlock again
 					success, errorMsg = utils.BwUnlock(masterPassword)
 					if !success {
@@ -199,4 +199,3 @@ func listItemsInFolderWithUnlock(folderID string) ([]utils.Item, error) {
 	}
 	return items, nil
 }
-

@@ -82,3 +82,17 @@ func InputPassword() (string, error) {
 
 	return password, nil
 }
+
+// ConfirmOverwrite prompts user to confirm overwrite with y/N
+func ConfirmOverwrite(message string) (bool, error) {
+	reader := bufio.NewReader(os.Stdin)
+
+	Question(message)
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		return false, fmt.Errorf("failed to read input: %w", err)
+	}
+
+	response := strings.TrimSpace(strings.ToLower(input))
+	return response == "y" || response == "yes", nil
+}

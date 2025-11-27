@@ -50,17 +50,17 @@ func GetDotenvsFolderID() (string, error) {
 	if outputStr == "" {
 		return "", fmt.Errorf("no output from bw list folders command")
 	}
-	
+
 	// Check if Bitwarden CLI is locked (requires master password)
 	if strings.Contains(outputStr, "Master password") || strings.Contains(outputStr, "master password") {
 		return "", ErrBitwardenLocked
 	}
-	
+
 	// Check if output looks like JSON (starts with '[' or '{')
 	if !strings.HasPrefix(outputStr, "[") && !strings.HasPrefix(outputStr, "{") {
 		return "", fmt.Errorf("unexpected output from bw list folders (not JSON): %s", outputStr)
 	}
-	
+
 	if err := json.Unmarshal([]byte(outputStr), &folders); err != nil {
 		return "", fmt.Errorf("failed to parse folders JSON (output: %s): %w", outputStr, err)
 	}
@@ -101,17 +101,17 @@ func ListItemsInFolder(folderID string) ([]Item, error) {
 	if outputStr == "" {
 		return nil, fmt.Errorf("no output from bw list items command")
 	}
-	
+
 	// Check if Bitwarden CLI is locked (requires master password)
 	if strings.Contains(outputStr, "Master password") || strings.Contains(outputStr, "master password") {
 		return nil, ErrBitwardenLocked
 	}
-	
+
 	// Check if output looks like JSON (starts with '[' or '{')
 	if !strings.HasPrefix(outputStr, "[") && !strings.HasPrefix(outputStr, "{") {
 		return nil, fmt.Errorf("unexpected output from bw list items (not JSON): %s", outputStr)
 	}
-	
+
 	if err := json.Unmarshal([]byte(outputStr), &items); err != nil {
 		return nil, fmt.Errorf("failed to parse items JSON (output: %s): %w", outputStr, err)
 	}
@@ -142,21 +142,21 @@ func BwUnlock(masterPassword string) (bool, string) {
 		defer os.Remove(tmpFile.Name()) // Clean up temp file
 		tmpFile.WriteString(masterPassword)
 		tmpFile.Close()
-		
+
 		// Try with --raw first to get session key directly
 		cmd := exec.Command("bw", "unlock", "--raw", "--passwordfile", tmpFile.Name())
 		var stdoutBuf, stderrBuf bytes.Buffer
 		cmd.Stdout = &stdoutBuf
 		cmd.Stderr = &stderrBuf
-		
+
 		err = cmd.Run()
 		output = stdoutBuf.Bytes()
 		stderr = stderrBuf.Bytes()
-		
+
 		// Check if stderr contains password prompt
 		stderrStr = strings.TrimSpace(string(stderr))
 		outputStr := strings.TrimSpace(string(output))
-		
+
 		// If --raw didn't work, try without --raw to get export command
 		if err == nil && outputStr == "" && !strings.Contains(stderrStr, "Master password") && !strings.Contains(stderrStr, "master password") {
 			cmd = exec.Command("bw", "unlock", "--passwordfile", tmpFile.Name())
@@ -169,7 +169,7 @@ func BwUnlock(masterPassword string) (bool, string) {
 			stderr = stderrBuf.Bytes()
 			outputStr = strings.TrimSpace(string(output))
 			stderrStr = strings.TrimSpace(string(stderr))
-			
+
 			// Parse export BW_SESSION="..." command
 			if strings.Contains(outputStr, "export BW_SESSION=") {
 				// Extract session key from export command
@@ -186,7 +186,7 @@ func BwUnlock(masterPassword string) (bool, string) {
 				}
 			}
 		}
-		
+
 		// Check if we got a session key (either from --raw or from export command)
 		if err == nil && !strings.Contains(stderrStr, "Master password") && !strings.Contains(stderrStr, "master password") {
 			if outputStr != "" {
@@ -217,11 +217,11 @@ func BwUnlock(masterPassword string) (bool, string) {
 		var stdoutBuf, stderrBuf bytes.Buffer
 		cmd.Stdout = &stdoutBuf
 		cmd.Stderr = &stderrBuf
-		
+
 		err = cmd.Run()
 		output = stdoutBuf.Bytes()
 		stderr = stderrBuf.Bytes()
-		
+
 		// Check if stderr contains password prompt
 		stderrStr = strings.TrimSpace(string(stderr))
 		if err == nil && !strings.Contains(stderrStr, "Master password") && !strings.Contains(stderrStr, "master password") {
@@ -243,7 +243,7 @@ func BwUnlock(masterPassword string) (bool, string) {
 		err = cmd.Run()
 		output = stdoutBuf.Bytes()
 		stderr = stderrBuf.Bytes()
-		
+
 		// Check if stderr contains password prompt
 		stderrStr = strings.TrimSpace(string(stderr))
 		if err == nil && !strings.Contains(stderrStr, "Master password") && !strings.Contains(stderrStr, "master password") {
@@ -265,7 +265,7 @@ func BwUnlock(masterPassword string) (bool, string) {
 		err = cmd.Run()
 		output = stdoutBuf.Bytes()
 		stderr = stderrBuf.Bytes()
-		
+
 		// Check if stderr contains password prompt
 		stderrStr = strings.TrimSpace(string(stderr))
 		if err == nil && !strings.Contains(stderrStr, "Master password") && !strings.Contains(stderrStr, "master password") {
@@ -277,7 +277,7 @@ func BwUnlock(masterPassword string) (bool, string) {
 			}
 		}
 	}
-	
+
 	// If all methods failed, return error
 	if err != nil {
 		// Combine stdout and stderr for error message
@@ -300,7 +300,7 @@ func BwUnlock(masterPassword string) (bool, string) {
 	// Check if unlock was successful
 	outputStr := strings.TrimSpace(string(output))
 	stderrStr = strings.TrimSpace(string(stderr))
-	
+
 	// bw unlock may return a session key (a long string)
 	// Session keys are typically base64-like strings, 40+ characters
 	// Check each line of output for a potential session key
@@ -325,7 +325,7 @@ func BwUnlock(masterPassword string) (bool, string) {
 			}
 		}
 	}
-	
+
 	// Check for success messages in both stdout and stderr
 	combinedOutput := outputStr + " " + stderrStr
 	if strings.Contains(combinedOutput, "You are logged in") ||
@@ -343,8 +343,8 @@ func BwUnlock(masterPassword string) (bool, string) {
 		}
 		return true, ""
 	}
-	
-	// If output is not empty but doesn't match success patterns, 
+
+	// If output is not empty but doesn't match success patterns,
 	// it might still be a session key (try setting it anyway if it's a single line)
 	if outputStr != "" && !strings.Contains(outputStr, "\n") && len(outputStr) >= 20 {
 		// Might be a session key, set it and assume success
@@ -369,7 +369,7 @@ func BwUnlock(masterPassword string) (bool, string) {
 			return true, ""
 		}
 	}
-	
+
 	// If output is not empty, try to extract session key
 	if outputStr != "" {
 		cleanOutput := strings.TrimSpace(outputStr)
@@ -386,7 +386,7 @@ func BwUnlock(masterPassword string) (bool, string) {
 			}
 		}
 	}
-	
+
 	// If we get here, unlock didn't succeed
 	errorMsg := fmt.Sprintf("unlock command completed but status check shows still locked (stdout: %q, stderr: %q)", outputStr, stderrStr)
 	return false, errorMsg
@@ -396,4 +396,3 @@ func BwUnlock(masterPassword string) (bool, string) {
 func IsLockedError(err error) bool {
 	return errors.Is(err, ErrBitwardenLocked) || strings.Contains(err.Error(), "Bitwarden CLI is locked")
 }
-

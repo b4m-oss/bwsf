@@ -7,12 +7,12 @@ import (
 
 const (
 	// ANSI color codes
-	colorReset  = "\033[0m"
-	colorRed    = "\033[31m"
-	colorGreen  = "\033[32m"
-	colorYellow = "\033[33m"
+	colorReset   = "\033[0m"
+	colorRed     = "\033[31m"
+	colorGreen   = "\033[32m"
+	colorYellow  = "\033[33m"
 	colorMagenta = "\033[35m"
-	colorCyan   = "\033[36m"
+	colorCyan    = "\033[36m"
 )
 
 // isColorEnabled checks if color output should be enabled
@@ -140,4 +140,3 @@ func ColorInfo(text string) string {
 func ColorQuestion(text string) string {
 	return colorize(text, colorMagenta)
 }
-

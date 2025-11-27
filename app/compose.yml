@@ -7,6 +7,8 @@ services:
     volumes:
       # ソースコードをマウント（ホットリロード対応）
       - .:/app
+      # プロジェクトルートもマウント（.envファイル用）
+      - ..:/project-root
       # Goモジュールキャッシュを永続化
       - go-mod-cache:/go/pkg/mod
       # .configディレクトリを永続化

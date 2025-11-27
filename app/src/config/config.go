@@ -8,9 +8,9 @@ import (
 )
 
 type Config struct {
-	HostType      string `json:"host_type"`       // "cloud" or "selfhosted"
-	SelfhostedURL string `json:"selfhosted_url"`  // URL for self-hosted instance
-	Email         string `json:"email"`           // Email address
+	HostType      string `json:"host_type"`      // "cloud" or "selfhosted"
+	SelfhostedURL string `json:"selfhosted_url"` // URL for self-hosted instance
+	Email         string `json:"email"`          // Email address
 }
 
 const (

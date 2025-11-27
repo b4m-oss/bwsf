@@ -21,13 +21,13 @@ func BwLogin(email, password, serverURL string) (bool, string) {
 		checkCmd := exec.Command("bw", "config", "server")
 		checkOutput, _ := checkCmd.CombinedOutput()
 		currentServer := strings.TrimSpace(string(checkOutput))
-		
+
 		// If server URL is different, logout first
 		if currentServer != "" && currentServer != serverURL {
 			logoutCmd := exec.Command("bw", "logout")
 			logoutCmd.Run() // Ignore errors, just try to logout
 		}
-		
+
 		configCmd := exec.Command("bw", "config", "server", serverURL)
 		configOutput, err := configCmd.CombinedOutput()
 		if err != nil {
@@ -72,9 +72,9 @@ func BwLogin(email, password, serverURL string) (bool, string) {
 
 	// Check if login was successful
 	outputStr := strings.TrimSpace(string(output))
-	if strings.Contains(outputStr, "You are logged in") || 
-	   strings.Contains(outputStr, "You're logged in") ||
-	   strings.Contains(outputStr, "logged in!") {
+	if strings.Contains(outputStr, "You are logged in") ||
+		strings.Contains(outputStr, "You're logged in") ||
+		strings.Contains(outputStr, "logged in!") {
 		return true, ""
 	}
 
