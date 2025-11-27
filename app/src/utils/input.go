@@ -7,27 +7,30 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/manifoldco/promptui"
 	"golang.org/x/term"
 )
 
 // SelectHostType prompts user to select between Cloud and Self-hosted
 func SelectHostType() (string, error) {
-	reader := bufio.NewReader(os.Stdin)
-
-	for {
-		fmt.Print("Bitwarden Cloud or Self-hosted? (cloud/selfhosted): ")
-		input, err := reader.ReadString('\n')
-		if err != nil {
-			return "", fmt.Errorf("failed to read input: %w", err)
-		}
-
-		input = strings.TrimSpace(strings.ToLower(input))
-		if input == "cloud" || input == "selfhosted" {
-			return input, nil
-		}
-
-		fmt.Println("Invalid input. Please enter 'cloud' or 'selfhosted'")
+	items := []string{"Cloud", "Self-hosted"}
+	
+	prompt := promptui.Select{
+		Label: ColorQuestion("Bitwarden Cloud or Self-hosted?"),
+		Items: items,
+		Size:  2,
 	}
+
+	index, _, err := prompt.Run()
+	if err != nil {
+		return "", fmt.Errorf("failed to select host type: %w", err)
+	}
+
+	// Convert selection to lowercase format
+	if index == 0 {
+		return "cloud", nil
+	}
+	return "selfhosted", nil
 }
 
 // InputURL prompts user to enter self-hosted URL
