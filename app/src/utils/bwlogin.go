@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"os"
 	"os/exec"
 	"strings"
 )
@@ -15,11 +14,21 @@ func BwLogin(email, password, serverURL string) (bool, string) {
 		return false, "bw command is not installed"
 	}
 
-	// Build command arguments
-	args := []string{"login", email, password}
+	// If self-hosted, configure server first
 	if serverURL != "" {
-		args = append(args, "--server", serverURL)
+		configCmd := exec.Command("bw", "config", "server", serverURL)
+		configOutput, err := configCmd.CombinedOutput()
+		if err != nil {
+			errorMsg := strings.TrimSpace(string(configOutput))
+			if errorMsg == "" {
+				errorMsg = err.Error()
+			}
+			return false, fmt.Sprintf("Failed to configure server: %s", errorMsg)
+		}
 	}
+
+	// Build login command arguments
+	args := []string{"login", email, password}
 
 	// Execute bw login command
 	cmd := exec.Command("bw", args...)
