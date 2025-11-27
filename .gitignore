@@ -10,3 +10,6 @@ app/.config
 !.env.*.example
 
 coverage.out
+
+# GoReleaser
+app/dist/
