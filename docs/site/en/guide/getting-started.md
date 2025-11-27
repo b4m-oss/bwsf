@@ -56,6 +56,5 @@ This will configure:
 
 ## Next Steps
 
-- [Install bwenv](/guide/installation) - Installation instructions for your platform
-- [Commands](/guide/commands) - Learn all available commands
-
+- [Install bwenv](/en/guide/installation) - Installation instructions for your platform
+- [Commands](/en/guide/commands) - Learn all available commands
