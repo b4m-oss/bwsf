@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -78,6 +79,63 @@ func GetDotenvsFolderID() (string, error) {
 
 	// Folder not found
 	return "", fmt.Errorf("dotenvs folder not found")
+}
+
+// ErrDotenvsFolderNotFound is returned when dotenvs folder does not exist
+var ErrDotenvsFolderNotFound = errors.New("dotenvs folder not found")
+
+// DotenvsFolderExists checks if the "dotenvs" folder exists in Bitwarden
+func DotenvsFolderExists() (bool, error) {
+	_, err := GetDotenvsFolderID()
+	if err != nil {
+		if strings.Contains(err.Error(), "dotenvs folder not found") {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+// CreateDotenvsFolder creates the "dotenvs" folder in Bitwarden
+func CreateDotenvsFolder() error {
+	// Check if bw command exists
+	_, err := exec.LookPath("bw")
+	if err != nil {
+		return fmt.Errorf("bw command is not installed")
+	}
+
+	// Start spinner
+	StartSpinner("Creating dotenvs folder...")
+	defer StopSpinner()
+
+	// Create folder JSON object
+	folderData := map[string]string{
+		"name": "dotenvs",
+	}
+	jsonData, err := json.Marshal(folderData)
+	if err != nil {
+		return fmt.Errorf("failed to marshal folder data: %w", err)
+	}
+
+	// Base64 encode the JSON (required by bw create folder)
+	encodedData := base64.StdEncoding.EncodeToString(jsonData)
+
+	// Execute bw create folder command
+	cmd := exec.Command("bw", "create", "folder", encodedData)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		errorMsg := strings.TrimSpace(string(output))
+		if errorMsg == "" {
+			errorMsg = err.Error()
+		}
+		return fmt.Errorf("failed to create folder: %s", errorMsg)
+	}
+
+	// Sync to ensure the folder is available
+	syncCmd := exec.Command("bw", "sync")
+	syncCmd.CombinedOutput() // Ignore errors from sync
+
+	return nil
 }
 
 // ListItemsInFolder retrieves all items in the specified folder

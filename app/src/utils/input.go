@@ -96,3 +96,19 @@ func ConfirmOverwrite(message string) (bool, error) {
 	response := strings.TrimSpace(strings.ToLower(input))
 	return response == "y" || response == "yes", nil
 }
+
+// ConfirmYesNo prompts user with a y/N question
+// Returns true if user answers "y" or "yes" (case insensitive)
+// Returns false for any other input including empty (default is No)
+func ConfirmYesNo(message string) (bool, error) {
+	reader := bufio.NewReader(os.Stdin)
+
+	Question("%s", message)
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		return false, fmt.Errorf("failed to read input: %w", err)
+	}
+
+	response := strings.TrimSpace(strings.ToLower(input))
+	return response == "y" || response == "yes", nil
+}

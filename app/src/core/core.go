@@ -12,6 +12,8 @@ import (
 // BwClient は Bitwarden CLI とのやり取りを抽象化するインターフェースです。
 type BwClient interface {
 	GetDotenvsFolderID() (string, error)
+	DotenvsFolderExists() (bool, error)
+	CreateDotenvsFolder() error
 	ListItemsInFolder(folderID string) ([]Item, error)
 	GetItemByName(folderID, name string) (*FullItem, error)
 	GetItemByID(id string) (*FullItem, error)
@@ -533,6 +535,7 @@ func SetupBitwardenCore(
 	inputURL func() (string, error),
 	inputEmail func() (string, error),
 	inputPassword func() (string, error),
+	confirmCreateFolder func() (bool, error),
 ) error {
 	// 既存設定を読み込み
 	existingConfig, err := config.LoadConfig()
@@ -583,6 +586,30 @@ func SetupBitwardenCore(
 	}
 	if err := config.SaveConfig(newConfig); err != nil {
 		return fmt.Errorf("failed to save configuration: %w", err)
+	}
+
+	// dotenvs フォルダの存在確認
+	exists, err := bw.DotenvsFolderExists()
+	if err != nil {
+		// エラーが発生した場合はログを出力して続行（致命的ではない）
+		logger.Info("Could not check dotenvs folder: ", err.Error())
+		return nil
+	}
+
+	if !exists {
+		// dotenvs フォルダがない場合、作成するか確認
+		confirmed, confirmErr := confirmCreateFolder()
+		if confirmErr != nil {
+			return fmt.Errorf("failed to confirm folder creation: %w", confirmErr)
+		}
+
+		if confirmed {
+			// フォルダを作成
+			if createErr := bw.CreateDotenvsFolder(); createErr != nil {
+				return fmt.Errorf("failed to create dotenvs folder: %w", createErr)
+			}
+			logger.Info("dotenvs folder created successfully")
+		}
 	}
 
 	return nil

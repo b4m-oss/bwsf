@@ -26,6 +26,13 @@ type mockBwClient struct {
 	folderID    string
 	folderIDErr error
 
+	// DotenvsFolderExists の挙動制御
+	folderExists    bool
+	folderExistsErr error
+
+	// CreateDotenvsFolder の挙動制御
+	createFolderErr error
+
 	// ListItemsInFolder の挙動制御
 	items        []Item
 	listItemsErr error
@@ -60,6 +67,19 @@ func (m *mockBwClient) GetDotenvsFolderID() (string, error) {
 		return "dummy-folder-id", nil
 	}
 	return m.folderID, nil
+}
+
+func (m *mockBwClient) DotenvsFolderExists() (bool, error) {
+	m.calls = append(m.calls, "DotenvsFolderExists")
+	if m.folderExistsErr != nil {
+		return false, m.folderExistsErr
+	}
+	return m.folderExists, nil
+}
+
+func (m *mockBwClient) CreateDotenvsFolder() error {
+	m.calls = append(m.calls, "CreateDotenvsFolder")
+	return m.createFolderErr
 }
 
 func (m *mockBwClient) ListItemsInFolder(folderID string) ([]Item, error) {
@@ -900,7 +920,7 @@ func TestListDotenvsCore_ListItemsError(t *testing.T) {
 
 // 正常系: cloud が選択され、Login 成功、SaveConfig が呼ばれる
 func TestSetupBitwardenCore_CloudSuccess(t *testing.T) {
-	bw := &mockBwClient{}
+	bw := &mockBwClient{folderExists: true}
 	fs := &mockFileSystem{}
 	logger := &mockLogger{}
 
@@ -912,6 +932,7 @@ func TestSetupBitwardenCore_CloudSuccess(t *testing.T) {
 		func() (string, error) { return "", errors.New("should not be called") },
 		func() (string, error) { return "test@example.com", nil },
 		func() (string, error) { return "password123", nil },
+		func() (bool, error) { return false, nil },
 	)
 
 	assert.NoError(t, err)
@@ -920,7 +941,7 @@ func TestSetupBitwardenCore_CloudSuccess(t *testing.T) {
 
 // 正常系: selfhosted が選択され、URL 入力、Login 成功
 func TestSetupBitwardenCore_SelfhostedSuccess(t *testing.T) {
-	bw := &mockBwClient{}
+	bw := &mockBwClient{folderExists: true}
 	fs := &mockFileSystem{}
 	logger := &mockLogger{}
 
@@ -932,6 +953,7 @@ func TestSetupBitwardenCore_SelfhostedSuccess(t *testing.T) {
 		func() (string, error) { return "https://bw.example.com", nil },
 		func() (string, error) { return "test@example.com", nil },
 		func() (string, error) { return "password123", nil },
+		func() (bool, error) { return false, nil },
 	)
 
 	assert.NoError(t, err)
@@ -952,6 +974,7 @@ func TestSetupBitwardenCore_SelectHostTypeError(t *testing.T) {
 		func() (string, error) { return "", nil },
 		func() (string, error) { return "", nil },
 		func() (string, error) { return "", nil },
+		func() (bool, error) { return false, nil },
 	)
 
 	assert.Error(t, err)
@@ -974,6 +997,7 @@ func TestSetupBitwardenCore_LoginError(t *testing.T) {
 		func() (string, error) { return "", nil },
 		func() (string, error) { return "test@example.com", nil },
 		func() (string, error) { return "wrongpassword", nil },
+		func() (bool, error) { return false, nil },
 	)
 
 	assert.Error(t, err)
@@ -1649,6 +1673,7 @@ func TestSetupBitwardenCore_InputURLError(t *testing.T) {
 		func() (string, error) { return "", errors.New("url input cancelled") },
 		func() (string, error) { return "test@example.com", nil },
 		func() (string, error) { return "password123", nil },
+		func() (bool, error) { return false, nil },
 	)
 
 	assert.Error(t, err)
@@ -1669,6 +1694,7 @@ func TestSetupBitwardenCore_InputEmailError(t *testing.T) {
 		func() (string, error) { return "", nil },
 		func() (string, error) { return "", errors.New("email input cancelled") },
 		func() (string, error) { return "password123", nil },
+		func() (bool, error) { return false, nil },
 	)
 
 	assert.Error(t, err)
@@ -1689,6 +1715,7 @@ func TestSetupBitwardenCore_InputPasswordError(t *testing.T) {
 		func() (string, error) { return "", nil },
 		func() (string, error) { return "test@example.com", nil },
 		func() (string, error) { return "", errors.New("password input cancelled") },
+		func() (bool, error) { return false, nil },
 	)
 
 	assert.Error(t, err)

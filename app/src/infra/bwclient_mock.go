@@ -247,6 +247,41 @@ func (m *MockBwClient) GetDotenvsFolderID() (string, error) {
 	return folderID, nil
 }
 
+// DotenvsFolderExists は dotenvs フォルダが存在するかどうかを確認します。
+func (m *MockBwClient) DotenvsFolderExists() (bool, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	if !m.isUnlocked {
+		return false, fmt.Errorf("Bitwarden CLI is locked")
+	}
+
+	_, ok := m.folders["dotenvs"]
+	return ok, nil
+}
+
+// CreateDotenvsFolder は dotenvs フォルダを作成します。
+func (m *MockBwClient) CreateDotenvsFolder() error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if !m.isUnlocked {
+		return fmt.Errorf("Bitwarden CLI is locked")
+	}
+
+	// すでに存在する場合はエラー
+	if _, ok := m.folders["dotenvs"]; ok {
+		return fmt.Errorf("dotenvs folder already exists")
+	}
+
+	// フォルダを作成
+	folderID := "folder-dotenvs-id"
+	m.folders["dotenvs"] = folderID
+	m.itemsByFolder[folderID] = []string{}
+
+	return nil
+}
+
 // ListItemsInFolder は指定フォルダ内のアイテム一覧を取得します。
 func (m *MockBwClient) ListItemsInFolder(folderID string) ([]core.Item, error) {
 	m.mu.RLock()

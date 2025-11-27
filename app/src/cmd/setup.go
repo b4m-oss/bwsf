@@ -33,6 +33,11 @@ func runSetup(cmd *cobra.Command, args []string) {
 	fs := infra.NewFileSystem()
 	logger := infra.NewLogger()
 
+	// confirmCreateFolder wrapper
+	confirmCreateFolder := func() (bool, error) {
+		return utils.ConfirmYesNo("dotenvs folder not found. Create it? (y/N): ")
+	}
+
 	// Call core logic
 	err := core.SetupBitwardenCore(
 		fs,
@@ -42,6 +47,7 @@ func runSetup(cmd *cobra.Command, args []string) {
 		utils.InputURL,
 		utils.InputEmail,
 		utils.InputPassword,
+		confirmCreateFolder,
 	)
 	if err != nil {
 		utils.Errorln("[ERROR]", err)

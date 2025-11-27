@@ -19,6 +19,16 @@ func (c *RealBwClient) GetDotenvsFolderID() (string, error) {
 	return utils.GetDotenvsFolderID()
 }
 
+// DotenvsFolderExists は dotenvs フォルダが存在するかどうかを確認します。
+func (c *RealBwClient) DotenvsFolderExists() (bool, error) {
+	return utils.DotenvsFolderExists()
+}
+
+// CreateDotenvsFolder は dotenvs フォルダを作成します。
+func (c *RealBwClient) CreateDotenvsFolder() error {
+	return utils.CreateDotenvsFolder()
+}
+
 // ListItemsInFolder は指定フォルダ内のアイテム一覧を取得します。
 func (c *RealBwClient) ListItemsInFolder(folderID string) ([]core.Item, error) {
 	items, err := utils.ListItemsInFolder(folderID)
