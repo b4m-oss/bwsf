@@ -7,6 +7,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/manifoldco/promptui"
 	"golang.org/x/term"
 )
 
@@ -21,13 +22,14 @@ func SelectHostType() (string, error) {
 			return "", fmt.Errorf("failed to read input: %w", err)
 		}
 
-		input = strings.TrimSpace(strings.ToLower(input))
-		if input == "cloud" || input == "selfhosted" {
-			return input, nil
-		}
+	index, _, err := prompt.Run()
+	if err != nil {
+		return "", fmt.Errorf("failed to select host type: %w", err)
+	}
 
 		Warningln("Invalid input. Please enter 'cloud' or 'selfhosted'")
 	}
+	return "selfhosted", nil
 }
 
 // InputURL prompts user to enter self-hosted URL
