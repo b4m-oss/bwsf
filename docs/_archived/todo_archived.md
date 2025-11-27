@@ -1,15 +1,19 @@
 # Archived TODOs
 
-# v0.9.1
+## v0.10.0
+- ✅ Linux版ビルド＆Homebrew公開
+- ✅ Bugfix: user GPG unverified
+
+## v0.9.1
 
 - ✅ Bugfix: プルリク作成時に、テストが発生しない
 
-# v0.9.0
+## v0.9.0
 
 - ✅ local/develop/staging/productionなどの、各環境への対応
 - ✅ dotenvsフォルダがない場合、新規作成するかどうか
 
-# v0.8.0
+## v0.8.0
 
 - ✅ E2Eテスト（モック）
 
