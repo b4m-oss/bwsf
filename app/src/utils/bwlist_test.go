@@ -3,6 +3,8 @@ package utils
 import (
 	"testing"
 
+	"bwenv/src/core"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,12 +19,12 @@ func TestErrBitwardenLocked_Defined(t *testing.T) {
 }
 
 // =============================================================================
-// IsLockedError のテスト
+// core.IsLockedError のテスト（utils から移動したため、core をテスト）
 // =============================================================================
 
 // 正常系: ErrBitwardenLocked を渡すと true
 func TestIsLockedError_WithErrBitwardenLocked(t *testing.T) {
-	result := IsLockedError(ErrBitwardenLocked)
+	result := core.IsLockedError(ErrBitwardenLocked)
 
 	assert.True(t, result)
 }
@@ -30,7 +32,7 @@ func TestIsLockedError_WithErrBitwardenLocked(t *testing.T) {
 // 正常系: "Bitwarden CLI is locked" を含むエラーは true
 func TestIsLockedError_WithLockedMessage(t *testing.T) {
 	// ErrBitwardenLocked を直接使用して検証
-	result := IsLockedError(ErrBitwardenLocked)
+	result := core.IsLockedError(ErrBitwardenLocked)
 
 	assert.True(t, result)
 }
@@ -39,7 +41,7 @@ func TestIsLockedError_WithLockedMessage(t *testing.T) {
 func TestIsLockedError_WithOtherError(t *testing.T) {
 	err := assert.AnError
 
-	result := IsLockedError(err)
+	result := core.IsLockedError(err)
 
 	assert.False(t, result)
 }
@@ -69,4 +71,3 @@ func TestItem_Struct(t *testing.T) {
 	assert.Equal(t, "item-456", item.ID)
 	assert.Equal(t, "my-project", item.Name)
 }
-

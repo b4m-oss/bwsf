@@ -392,7 +392,3 @@ func BwUnlock(masterPassword string) (bool, string) {
 	return false, errorMsg
 }
 
-// IsLockedError checks if an error indicates that Bitwarden CLI is locked
-func IsLockedError(err error) bool {
-	return errors.Is(err, ErrBitwardenLocked) || strings.Contains(err.Error(), "Bitwarden CLI is locked")
-}

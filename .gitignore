@@ -8,3 +8,5 @@ app/.config
 .env
 .env.*
 !.env.*.example
+
+coverage.out
