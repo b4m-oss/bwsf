@@ -46,6 +46,20 @@ func (fs *RealFileSystem) MkdirAll(path string, perm uint32) error {
 	return os.MkdirAll(path, os.FileMode(perm))
 }
 
+// ReadDir はディレクトリ内のエントリを読み込みます。
+func (fs *RealFileSystem) ReadDir(path string) ([]core.DirEntry, error) {
+	entries, err := os.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]core.DirEntry, len(entries))
+	for i, entry := range entries {
+		result[i] = &realDirEntry{entry: entry}
+	}
+	return result, nil
+}
+
 // realFileInfo は core.FileInfo インターフェースの実装です。
 type realFileInfo struct {
 	notExist bool
@@ -54,5 +68,20 @@ type realFileInfo struct {
 // IsNotExist はファイルが存在しないかどうかを返します。
 func (fi *realFileInfo) IsNotExist() bool {
 	return fi.notExist
+}
+
+// realDirEntry は core.DirEntry インターフェースの実装です。
+type realDirEntry struct {
+	entry os.DirEntry
+}
+
+// Name はエントリ名を返します。
+func (de *realDirEntry) Name() string {
+	return de.entry.Name()
+}
+
+// IsDir はディレクトリかどうかを返します。
+func (de *realDirEntry) IsDir() bool {
+	return de.entry.IsDir()
 }
 

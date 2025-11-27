@@ -73,3 +73,68 @@ func FindEnvFile(dirPath string) (string, error) {
 
 	return envPath, nil
 }
+
+// IsExampleFile checks if a filename contains ".example" anywhere in it
+// Examples: .env.example, .env.staging.example, .env.example.staging
+func IsExampleFile(filename string) bool {
+	return strings.Contains(filename, ".example")
+}
+
+// FindEnvFiles finds all .env* files in the specified directory, excluding .example files
+// Returns a slice of file paths sorted by filename
+func FindEnvFiles(dirPath string) ([]string, error) {
+	entries, err := os.ReadDir(dirPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read directory: %w", err)
+	}
+
+	var envFiles []string
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+
+		name := entry.Name()
+		// Check if file starts with ".env"
+		if !strings.HasPrefix(name, ".env") {
+			continue
+		}
+
+		// Skip .example files
+		if IsExampleFile(name) {
+			continue
+		}
+
+		envFiles = append(envFiles, filepath.Join(dirPath, name))
+	}
+
+	// Sort by filename for consistent ordering
+	// .env should come first, then alphabetically
+	sortEnvFiles(envFiles)
+
+	return envFiles, nil
+}
+
+// sortEnvFiles sorts env files with .env first, then alphabetically
+func sortEnvFiles(files []string) {
+	for i := 0; i < len(files); i++ {
+		for j := i + 1; j < len(files); j++ {
+			nameI := filepath.Base(files[i])
+			nameJ := filepath.Base(files[j])
+
+			// .env should always come first
+			if nameI == ".env" {
+				continue
+			}
+			if nameJ == ".env" {
+				files[i], files[j] = files[j], files[i]
+				continue
+			}
+
+			// Otherwise, sort alphabetically
+			if nameI > nameJ {
+				files[i], files[j] = files[j], files[i]
+			}
+		}
+	}
+}

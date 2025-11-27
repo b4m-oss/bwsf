@@ -28,6 +28,13 @@ type FileSystem interface {
 	WriteFile(path string, data []byte, perm uint32) error
 	Stat(path string) (FileInfo, error)
 	MkdirAll(path string, perm uint32) error
+	ReadDir(path string) ([]DirEntry, error)
+}
+
+// DirEntry はディレクトリエントリを表します。
+type DirEntry interface {
+	Name() string
+	IsDir() bool
 }
 
 // FileInfo は Stat の結果に必要な最小限の情報を表します。
@@ -58,6 +65,10 @@ type FullItem struct {
 type EnvData struct {
 	Lines []string `json:"lines"`
 }
+
+// MultiEnvData は複数の .env ファイルのデータを表します。
+// キーはファイル名（例: ".env", ".env.staging"）
+type MultiEnvData map[string]EnvData
 
 // IsLockedError はエラーがロック関連かどうかを判定します。
 func IsLockedError(err error) bool {
@@ -130,6 +141,7 @@ func WithUnlockRetry(
 }
 
 // PushEnvCore は .env ファイルを Bitwarden にプッシュするコアロジックです。
+// 複数の .env* ファイルを自動検出し、.example ファイルは除外します。
 func PushEnvCore(
 	fromDir, projectName string,
 	fs FileSystem,
@@ -138,27 +150,45 @@ func PushEnvCore(
 	promptPassword func() (string, error),
 	logger Logger,
 ) error {
-	// .env ファイルのパスを決定
-	envPath := filepath.Join(fromDir, ".env")
+	// ディレクトリを正規化
+	actualDir := fromDir
+	if fromDir == "." || fromDir == ".." {
+		actualDir = "/project-root"
+	}
 
-	// .env ファイルを読み込む
-	content, err := fs.OpenEnvFile(envPath)
+	// .env* ファイルを検出
+	envFiles, err := findEnvFilesFromFS(fs, actualDir)
 	if err != nil {
-		// fromDir が "." または ".." の場合、/project-root へフォールバック
+		// フォールバック: fromDir が "." または ".." の場合、/project-root を試す
 		if fromDir == "." || fromDir == ".." {
-			fallbackPath := filepath.Join("/project-root", ".env")
-			content, err = fs.OpenEnvFile(fallbackPath)
+			envFiles, err = findEnvFilesFromFS(fs, "/project-root")
 			if err != nil {
-				return fmt.Errorf("failed to open .env file: %w", err)
+				return fmt.Errorf("failed to find .env files: %w", err)
 			}
+			actualDir = "/project-root"
 		} else {
-			return fmt.Errorf("failed to open .env file: %w", err)
+			return fmt.Errorf("failed to find .env files: %w", err)
 		}
 	}
 
-	// .env をパースして JSON に変換
-	envData := parseEnvContent(content)
-	jsonData, err := envDataToJSON(envData)
+	if len(envFiles) == 0 {
+		return fmt.Errorf("no .env files found in %s", actualDir)
+	}
+
+	// 各ファイルを読み込んで MultiEnvData に格納
+	multiData := make(MultiEnvData)
+	for _, envPath := range envFiles {
+		content, err := fs.ReadFile(envPath)
+		if err != nil {
+			return fmt.Errorf("failed to read %s: %w", envPath, err)
+		}
+		fileName := filepath.Base(envPath)
+		envData := parseEnvContent(content)
+		multiData[fileName] = *envData
+	}
+
+	// JSON に変換
+	jsonData, err := multiEnvDataToJSON(multiData)
 	if err != nil {
 		return fmt.Errorf("failed to convert to JSON: %w", err)
 	}
@@ -205,7 +235,100 @@ func PushEnvCore(
 	return nil
 }
 
+// GetPushedEnvFiles は push 対象の .env ファイル名一覧を返します（表示用）
+func GetPushedEnvFiles(
+	fromDir string,
+	fs FileSystem,
+) ([]string, error) {
+	actualDir := fromDir
+	if fromDir == "." || fromDir == ".." {
+		actualDir = "/project-root"
+	}
+
+	envFiles, err := findEnvFilesFromFS(fs, actualDir)
+	if err != nil {
+		if fromDir == "." || fromDir == ".." {
+			envFiles, err = findEnvFilesFromFS(fs, "/project-root")
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
+	}
+
+	// ファイル名のみを返す
+	var names []string
+	for _, path := range envFiles {
+		names = append(names, filepath.Base(path))
+	}
+	return names, nil
+}
+
+// findEnvFilesFromFS は FileSystem インターフェースを使って .env* ファイルを検出します。
+func findEnvFilesFromFS(fs FileSystem, dirPath string) ([]string, error) {
+	entries, err := fs.ReadDir(dirPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read directory: %w", err)
+	}
+
+	var envFiles []string
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+
+		name := entry.Name()
+		// Check if file starts with ".env"
+		if !strings.HasPrefix(name, ".env") {
+			continue
+		}
+
+		// Skip .example files
+		if isExampleFile(name) {
+			continue
+		}
+
+		envFiles = append(envFiles, filepath.Join(dirPath, name))
+	}
+
+	// Sort by filename for consistent ordering
+	sortEnvFiles(envFiles)
+
+	return envFiles, nil
+}
+
+// isExampleFile checks if a filename contains ".example" anywhere in it
+func isExampleFile(filename string) bool {
+	return strings.Contains(filename, ".example")
+}
+
+// sortEnvFiles sorts env files with .env first, then alphabetically
+func sortEnvFiles(files []string) {
+	for i := 0; i < len(files); i++ {
+		for j := i + 1; j < len(files); j++ {
+			nameI := filepath.Base(files[i])
+			nameJ := filepath.Base(files[j])
+
+			// .env should always come first
+			if nameI == ".env" {
+				continue
+			}
+			if nameJ == ".env" {
+				files[i], files[j] = files[j], files[i]
+				continue
+			}
+
+			// Otherwise, sort alphabetically
+			if nameI > nameJ {
+				files[i], files[j] = files[j], files[i]
+			}
+		}
+	}
+}
+
 // PullEnvCore は Bitwarden から .env ファイルをプルするコアロジックです。
+// 複数の .env* ファイルを復元します。
 func PullEnvCore(
 	outputDir, projectName string,
 	fs FileSystem,
@@ -247,25 +370,17 @@ func PullEnvCore(
 		return fmt.Errorf("item '%s' not found in dotenvs folder", projectName)
 	}
 
-	// JSON から .env 内容を復元
-	envContent, err := restoreEnvFileFromJSON(item.Notes)
+	// JSON から MultiEnvData を復元
+	multiData, err := restoreMultiEnvFromJSON(item.Notes)
 	if err != nil {
-		return fmt.Errorf("failed to restore .env from JSON: %w", err)
-	}
-
-	// 出力先パス
-	envPath := filepath.Join(outputDir, ".env")
-
-	// ファイルの存在確認
-	info, err := fs.Stat(envPath)
-	if err == nil && !info.IsNotExist() {
-		// ファイルが存在する場合、上書き確認
-		confirmed, confirmErr := confirmOverwrite(envPath)
-		if confirmErr != nil {
-			return fmt.Errorf("failed to confirm overwrite: %w", confirmErr)
+		// 旧形式の場合は単一ファイルとして処理（下位互換性のため）
+		envContent, legacyErr := restoreEnvFileFromJSON(item.Notes)
+		if legacyErr != nil {
+			return fmt.Errorf("failed to restore .env from JSON: %w", err)
 		}
-		if !confirmed {
-			return nil // キャンセル
+		// 旧形式を新形式に変換
+		multiData = MultiEnvData{
+			".env": EnvData{Lines: strings.Split(envContent, "\n")},
 		}
 	}
 
@@ -276,12 +391,105 @@ func PullEnvCore(
 		}
 	}
 
-	// .env ファイルを書き出し
-	if err := fs.WriteFile(envPath, []byte(envContent), 0644); err != nil {
-		return fmt.Errorf("failed to write .env file: %w", err)
+	// 各ファイルを書き出し
+	for fileName, envData := range multiData {
+		envPath := filepath.Join(outputDir, fileName)
+
+		// ファイルの存在確認
+		info, err := fs.Stat(envPath)
+		if err == nil && !info.IsNotExist() {
+			// ファイルが存在する場合、上書き確認
+			confirmed, confirmErr := confirmOverwrite(envPath)
+			if confirmErr != nil {
+				return fmt.Errorf("failed to confirm overwrite: %w", confirmErr)
+			}
+			if !confirmed {
+				continue // このファイルはスキップ
+			}
+		}
+
+		// ファイル内容を復元
+		envContent := restoreEnvContentFromData(envData)
+
+		// ファイルを書き出し
+		if err := fs.WriteFile(envPath, []byte(envContent), 0644); err != nil {
+			return fmt.Errorf("failed to write %s file: %w", fileName, err)
+		}
 	}
 
 	return nil
+}
+
+// GetPulledEnvFiles は pull 対象の .env ファイル名一覧を返します（表示用）
+func GetPulledEnvFiles(
+	projectName string,
+	bw BwClient,
+	cfg *config.Config,
+	promptPassword func() (string, error),
+	logger Logger,
+) ([]string, error) {
+	// dotenvs フォルダ ID を取得
+	var folderID string
+	err := WithUnlockRetry(bw, cfg, promptPassword, logger, func() error {
+		var innerErr error
+		folderID, innerErr = bw.GetDotenvsFolderID()
+		return innerErr
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// アイテムを取得
+	var item *FullItem
+	err = WithUnlockRetry(bw, cfg, promptPassword, logger, func() error {
+		var innerErr error
+		item, innerErr = bw.GetItemByName(folderID, projectName)
+		return innerErr
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if item == nil {
+		return nil, nil
+	}
+
+	// JSON から MultiEnvData を復元
+	multiData, err := restoreMultiEnvFromJSON(item.Notes)
+	if err != nil {
+		// 旧形式の場合
+		return []string{".env"}, nil
+	}
+
+	var names []string
+	for fileName := range multiData {
+		names = append(names, fileName)
+	}
+
+	// ソート
+	sortFileNames(names)
+	return names, nil
+}
+
+// sortFileNames sorts file names with .env first, then alphabetically
+func sortFileNames(names []string) {
+	for i := 0; i < len(names); i++ {
+		for j := i + 1; j < len(names); j++ {
+			// .env should always come first
+			if names[i] == ".env" {
+				continue
+			}
+			if names[j] == ".env" {
+				names[i], names[j] = names[j], names[i]
+				continue
+			}
+
+			// Otherwise, sort alphabetically
+			if names[i] > names[j] {
+				names[i], names[j] = names[j], names[i]
+			}
+		}
+	}
 }
 
 // ListDotenvsCore は dotenvs フォルダ内のアイテム一覧を取得するコアロジックです。
@@ -406,4 +614,27 @@ func restoreEnvFileFromJSON(jsonStr string) (string, error) {
 		return "", fmt.Errorf("failed to unmarshal JSON: %w", err)
 	}
 	return strings.Join(data.Lines, "\n"), nil
+}
+
+// multiEnvDataToJSON は MultiEnvData を JSON 文字列に変換します。
+func multiEnvDataToJSON(data MultiEnvData) (string, error) {
+	jsonBytes, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal multi env data to JSON: %w", err)
+	}
+	return string(jsonBytes), nil
+}
+
+// restoreMultiEnvFromJSON は JSON から MultiEnvData を復元します。
+func restoreMultiEnvFromJSON(jsonStr string) (MultiEnvData, error) {
+	var data MultiEnvData
+	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal JSON: %w", err)
+	}
+	return data, nil
+}
+
+// restoreEnvContentFromData は EnvData から .env ファイルの内容を復元します。
+func restoreEnvContentFromData(data EnvData) string {
+	return strings.Join(data.Lines, "\n")
 }

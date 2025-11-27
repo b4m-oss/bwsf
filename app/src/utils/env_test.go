@@ -182,3 +182,161 @@ API_KEY=abc123`
 	assert.Equal(t, originalContent, restoredContent)
 }
 
+// =============================================================================
+// IsExampleFile のテスト
+// =============================================================================
+
+// 正常系: .env.example は example ファイル
+func TestIsExampleFile_DotEnvExample(t *testing.T) {
+	assert.True(t, IsExampleFile(".env.example"))
+}
+
+// 正常系: .env.staging.example は example ファイル
+func TestIsExampleFile_DotEnvStagingExample(t *testing.T) {
+	assert.True(t, IsExampleFile(".env.staging.example"))
+}
+
+// 正常系: .env.example.staging は example ファイル
+func TestIsExampleFile_DotEnvExampleStaging(t *testing.T) {
+	assert.True(t, IsExampleFile(".env.example.staging"))
+}
+
+// 正常系: .env は example ファイルではない
+func TestIsExampleFile_DotEnv(t *testing.T) {
+	assert.False(t, IsExampleFile(".env"))
+}
+
+// 正常系: .env.staging は example ファイルではない
+func TestIsExampleFile_DotEnvStaging(t *testing.T) {
+	assert.False(t, IsExampleFile(".env.staging"))
+}
+
+// 正常系: .env.local は example ファイルではない
+func TestIsExampleFile_DotEnvLocal(t *testing.T) {
+	assert.False(t, IsExampleFile(".env.local"))
+}
+
+// =============================================================================
+// FindEnvFiles のテスト
+// =============================================================================
+
+// 正常系: 複数の .env* ファイルを検出
+func TestFindEnvFiles_MultipleFiles(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// テスト用ファイルを作成
+	os.WriteFile(filepath.Join(tmpDir, ".env"), []byte("KEY=value"), 0644)
+	os.WriteFile(filepath.Join(tmpDir, ".env.local"), []byte("KEY=local"), 0644)
+	os.WriteFile(filepath.Join(tmpDir, ".env.staging"), []byte("KEY=staging"), 0644)
+	os.WriteFile(filepath.Join(tmpDir, ".env.production"), []byte("KEY=prod"), 0644)
+
+	files, err := FindEnvFiles(tmpDir)
+
+	assert.NoError(t, err)
+	assert.Len(t, files, 4)
+
+	// .env が最初に来ることを確認
+	assert.Equal(t, ".env", filepath.Base(files[0]))
+}
+
+// 正常系: .example ファイルは除外される
+func TestFindEnvFiles_ExcludesExampleFiles(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// テスト用ファイルを作成
+	os.WriteFile(filepath.Join(tmpDir, ".env"), []byte("KEY=value"), 0644)
+	os.WriteFile(filepath.Join(tmpDir, ".env.example"), []byte("KEY=example"), 0644)
+	os.WriteFile(filepath.Join(tmpDir, ".env.staging"), []byte("KEY=staging"), 0644)
+	os.WriteFile(filepath.Join(tmpDir, ".env.staging.example"), []byte("KEY=staging-example"), 0644)
+	os.WriteFile(filepath.Join(tmpDir, ".env.example.staging"), []byte("KEY=example-staging"), 0644)
+
+	files, err := FindEnvFiles(tmpDir)
+
+	assert.NoError(t, err)
+	assert.Len(t, files, 2) // .env と .env.staging のみ
+
+	// ファイル名を確認
+	var names []string
+	for _, f := range files {
+		names = append(names, filepath.Base(f))
+	}
+	assert.Contains(t, names, ".env")
+	assert.Contains(t, names, ".env.staging")
+	assert.NotContains(t, names, ".env.example")
+	assert.NotContains(t, names, ".env.staging.example")
+	assert.NotContains(t, names, ".env.example.staging")
+}
+
+// 正常系: .env ファイルがない場合は空スライス
+func TestFindEnvFiles_NoEnvFiles(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// .env 以外のファイルを作成
+	os.WriteFile(filepath.Join(tmpDir, "README.md"), []byte("# README"), 0644)
+	os.WriteFile(filepath.Join(tmpDir, "config.json"), []byte("{}"), 0644)
+
+	files, err := FindEnvFiles(tmpDir)
+
+	assert.NoError(t, err)
+	assert.Empty(t, files)
+}
+
+// 正常系: .env のみの場合
+func TestFindEnvFiles_OnlyDotEnv(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	os.WriteFile(filepath.Join(tmpDir, ".env"), []byte("KEY=value"), 0644)
+
+	files, err := FindEnvFiles(tmpDir)
+
+	assert.NoError(t, err)
+	assert.Len(t, files, 1)
+	assert.Equal(t, ".env", filepath.Base(files[0]))
+}
+
+// 正常系: ファイルはアルファベット順にソートされる（.env が先頭）
+func TestFindEnvFiles_SortedAlphabetically(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// 順序がバラバラにファイルを作成
+	os.WriteFile(filepath.Join(tmpDir, ".env.staging"), []byte("KEY=staging"), 0644)
+	os.WriteFile(filepath.Join(tmpDir, ".env.production"), []byte("KEY=prod"), 0644)
+	os.WriteFile(filepath.Join(tmpDir, ".env"), []byte("KEY=value"), 0644)
+	os.WriteFile(filepath.Join(tmpDir, ".env.local"), []byte("KEY=local"), 0644)
+
+	files, err := FindEnvFiles(tmpDir)
+
+	assert.NoError(t, err)
+	assert.Len(t, files, 4)
+
+	// ソート順を確認
+	assert.Equal(t, ".env", filepath.Base(files[0]))
+	assert.Equal(t, ".env.local", filepath.Base(files[1]))
+	assert.Equal(t, ".env.production", filepath.Base(files[2]))
+	assert.Equal(t, ".env.staging", filepath.Base(files[3]))
+}
+
+// 異常系: 存在しないディレクトリ
+func TestFindEnvFiles_NonExistentDir(t *testing.T) {
+	files, err := FindEnvFiles("/nonexistent/directory")
+
+	assert.Error(t, err)
+	assert.Nil(t, files)
+	assert.Contains(t, err.Error(), "failed to read directory")
+}
+
+// 正常系: ディレクトリは無視される
+func TestFindEnvFiles_IgnoresDirectories(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// .env ファイルと .env ディレクトリを作成
+	os.WriteFile(filepath.Join(tmpDir, ".env"), []byte("KEY=value"), 0644)
+	os.MkdirAll(filepath.Join(tmpDir, ".env.d"), 0755)
+
+	files, err := FindEnvFiles(tmpDir)
+
+	assert.NoError(t, err)
+	assert.Len(t, files, 1)
+	assert.Equal(t, ".env", filepath.Base(files[0]))
+}
+

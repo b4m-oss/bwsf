@@ -281,11 +281,12 @@ FEATURE_BETA=false`
 	require.NoError(t, err)
 	require.NotNil(t, item)
 
-	// NotesがJSON形式であることを確認
-	var envData core.EnvData
-	err = json.Unmarshal([]byte(item.Notes), &envData)
+	// NotesがMultiEnvData形式のJSON形式であることを確認
+	var multiEnvData core.MultiEnvData
+	err = json.Unmarshal([]byte(item.Notes), &multiEnvData)
 	require.NoError(t, err, "Notes should be valid JSON")
-	assert.Greater(t, len(envData.Lines), 0, "Should have lines")
+	assert.Contains(t, multiEnvData, ".env", "Should have .env key")
+	assert.Greater(t, len(multiEnvData[".env"].Lines), 0, "Should have lines")
 
 	// Pullして内容が復元されることを確認
 	confirmOverwrite := func(path string) (bool, error) { return true, nil }

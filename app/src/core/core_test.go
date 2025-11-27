@@ -124,20 +124,27 @@ type mockFileSystem struct {
 	envFileErr     error
 
 	// ReadFile の挙動制御
-	readContent []byte
-	readErr     error
+	readContent    []byte
+	readContentMap map[string][]byte // ファイルパスごとの内容
+	readErr        error
 
 	// WriteFile の挙動制御
-	writtenPath string
-	writtenData []byte
-	writeErr    error
+	writtenPath  string
+	writtenData  []byte
+	writtenFiles map[string][]byte // 複数ファイル用
+	writeErr     error
 
 	// Stat の挙動制御
-	statInfo FileInfo
-	statErr  error
+	statInfo    FileInfo
+	statInfoMap map[string]FileInfo // ファイルパスごとの情報
+	statErr     error
 
 	// MkdirAll の挙動制御
 	mkdirErr error
+
+	// ReadDir の挙動制御
+	dirEntries []DirEntry
+	readDirErr error
 }
 
 func (m *mockFileSystem) OpenEnvFile(path string) ([]byte, error) {
@@ -153,6 +160,11 @@ func (m *mockFileSystem) ReadFile(path string) ([]byte, error) {
 	if m.readErr != nil {
 		return nil, m.readErr
 	}
+	if m.readContentMap != nil {
+		if content, ok := m.readContentMap[path]; ok {
+			return content, nil
+		}
+	}
 	return m.readContent, nil
 }
 
@@ -160,6 +172,10 @@ func (m *mockFileSystem) WriteFile(path string, data []byte, perm uint32) error 
 	m.calls = append(m.calls, fmt.Sprintf("WriteFile(%s)", path))
 	m.writtenPath = path
 	m.writtenData = data
+	if m.writtenFiles == nil {
+		m.writtenFiles = make(map[string][]byte)
+	}
+	m.writtenFiles[path] = data
 	return m.writeErr
 }
 
@@ -167,6 +183,11 @@ func (m *mockFileSystem) Stat(path string) (FileInfo, error) {
 	m.calls = append(m.calls, fmt.Sprintf("Stat(%s)", path))
 	if m.statErr != nil {
 		return nil, m.statErr
+	}
+	if m.statInfoMap != nil {
+		if info, ok := m.statInfoMap[path]; ok {
+			return info, nil
+		}
 	}
 	if m.statInfo != nil {
 		return m.statInfo, nil
@@ -177,6 +198,28 @@ func (m *mockFileSystem) Stat(path string) (FileInfo, error) {
 func (m *mockFileSystem) MkdirAll(path string, perm uint32) error {
 	m.calls = append(m.calls, fmt.Sprintf("MkdirAll(%s)", path))
 	return m.mkdirErr
+}
+
+func (m *mockFileSystem) ReadDir(path string) ([]DirEntry, error) {
+	m.calls = append(m.calls, fmt.Sprintf("ReadDir(%s)", path))
+	if m.readDirErr != nil {
+		return nil, m.readDirErr
+	}
+	return m.dirEntries, nil
+}
+
+// mockDirEntry は DirEntry インターフェースの実装です。
+type mockDirEntry struct {
+	name  string
+	isDir bool
+}
+
+func (e *mockDirEntry) Name() string {
+	return e.name
+}
+
+func (e *mockDirEntry) IsDir() bool {
+	return e.isDir
 }
 
 // --- mockFallbackFileSystem ---
@@ -217,6 +260,17 @@ func (m *mockFallbackFileSystem) Stat(path string) (FileInfo, error) {
 func (m *mockFallbackFileSystem) MkdirAll(path string, perm uint32) error {
 	m.calls = append(m.calls, fmt.Sprintf("MkdirAll(%s)", path))
 	return nil
+}
+
+func (m *mockFallbackFileSystem) ReadDir(path string) ([]DirEntry, error) {
+	m.calls = append(m.calls, fmt.Sprintf("ReadDir(%s)", path))
+	m.callCount++
+	if m.callCount == 1 {
+		return nil, errors.New("not found")
+	}
+	m.fallbackCalled = true
+	// デフォルトで .env ファイルのみを返す
+	return []DirEntry{&mockDirEntry{name: ".env", isDir: false}}, nil
 }
 
 // --- mockLogger ---
@@ -410,7 +464,12 @@ func TestPushEnvCore_CreateNewItem(t *testing.T) {
 		itemByName: nil, // アイテムなし
 	}
 	fs := &mockFileSystem{
-		envFileContent: []byte("KEY=value\n"),
+		dirEntries: []DirEntry{
+			&mockDirEntry{name: ".env", isDir: false},
+		},
+		readContentMap: map[string][]byte{
+			"/project-root/.env": []byte("KEY=value\n"),
+		},
 	}
 	logger := &mockLogger{}
 	cfg := &config.Config{}
@@ -438,7 +497,12 @@ func TestPushEnvCore_UpdateExistingItem(t *testing.T) {
 		itemByName: &FullItem{ID: "item-456", Name: "my-project", Notes: "{}"},
 	}
 	fs := &mockFileSystem{
-		envFileContent: []byte("KEY=newvalue\n"),
+		dirEntries: []DirEntry{
+			&mockDirEntry{name: ".env", isDir: false},
+		},
+		readContentMap: map[string][]byte{
+			"/project-root/.env": []byte("KEY=newvalue\n"),
+		},
 	}
 	logger := &mockLogger{}
 	cfg := &config.Config{}
@@ -485,7 +549,7 @@ func TestPushEnvCore_FallbackToProjectRoot(t *testing.T) {
 func TestPushEnvCore_EnvFileNotFound(t *testing.T) {
 	bw := &mockBwClient{folderID: "folder-123"}
 	fs := &mockFileSystem{
-		envFileErr: errors.New(".env file not found"),
+		dirEntries: []DirEntry{}, // 空のディレクトリ
 	}
 	logger := &mockLogger{}
 	cfg := &config.Config{}
@@ -501,7 +565,7 @@ func TestPushEnvCore_EnvFileNotFound(t *testing.T) {
 	)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to open .env file")
+	assert.Contains(t, err.Error(), "no .env files found")
 }
 
 // 異常系: GetDotenvsFolderID がエラーを返す
@@ -510,7 +574,12 @@ func TestPushEnvCore_GetFolderIDError(t *testing.T) {
 		folderIDErr: errors.New("dotenvs folder not found"),
 	}
 	fs := &mockFileSystem{
-		envFileContent: []byte("KEY=value\n"),
+		dirEntries: []DirEntry{
+			&mockDirEntry{name: ".env", isDir: false},
+		},
+		readContentMap: map[string][]byte{
+			"/project-root/.env": []byte("KEY=value\n"),
+		},
 	}
 	logger := &mockLogger{}
 	cfg := &config.Config{}
@@ -537,7 +606,12 @@ func TestPushEnvCore_CreateItemError(t *testing.T) {
 		createErr:  errors.New("failed to create item"),
 	}
 	fs := &mockFileSystem{
-		envFileContent: []byte("KEY=value\n"),
+		dirEntries: []DirEntry{
+			&mockDirEntry{name: ".env", isDir: false},
+		},
+		readContentMap: map[string][]byte{
+			"/project-root/.env": []byte("KEY=value\n"),
+		},
 	}
 	logger := &mockLogger{}
 	cfg := &config.Config{}
@@ -1505,7 +1579,12 @@ func TestPushEnvCore_GetItemByNameError(t *testing.T) {
 		itemByNameErr: errors.New("get item failed"),
 	}
 	fs := &mockFileSystem{
-		envFileContent: []byte("KEY=value\n"),
+		dirEntries: []DirEntry{
+			&mockDirEntry{name: ".env", isDir: false},
+		},
+		readContentMap: map[string][]byte{
+			"/project-root/.env": []byte("KEY=value\n"),
+		},
 	}
 	logger := &mockLogger{}
 	cfg := &config.Config{}
@@ -1532,7 +1611,12 @@ func TestPushEnvCore_UpdateItemError(t *testing.T) {
 		updateErr:  errors.New("update failed"),
 	}
 	fs := &mockFileSystem{
-		envFileContent: []byte("KEY=value\n"),
+		dirEntries: []DirEntry{
+			&mockDirEntry{name: ".env", isDir: false},
+		},
+		readContentMap: map[string][]byte{
+			"/project-root/.env": []byte("KEY=value\n"),
+		},
 	}
 	logger := &mockLogger{}
 	cfg := &config.Config{}
@@ -1693,4 +1777,364 @@ func TestPushEnvCore_DoubleDotFallback(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.True(t, fs.fallbackCalled)
+}
+
+// =============================================================================
+// MultiEnvData のテスト
+// =============================================================================
+
+// 正常系: MultiEnvData を JSON に変換して復元
+func TestMultiEnvData_RoundTrip(t *testing.T) {
+	original := MultiEnvData{
+		".env": EnvData{Lines: []string{"KEY1=value1", "KEY2=value2"}},
+		".env.staging": EnvData{Lines: []string{"KEY1=staging1", "KEY2=staging2"}},
+	}
+
+	// JSON に変換
+	jsonStr, err := multiEnvDataToJSON(original)
+	assert.NoError(t, err)
+	assert.Contains(t, jsonStr, `".env"`)
+	assert.Contains(t, jsonStr, `".env.staging"`)
+
+	// 復元
+	restored, err := restoreMultiEnvFromJSON(jsonStr)
+	assert.NoError(t, err)
+	assert.Equal(t, original, restored)
+}
+
+// 正常系: restoreEnvContentFromData
+func TestRestoreEnvContentFromData(t *testing.T) {
+	data := EnvData{Lines: []string{"KEY1=value1", "KEY2=value2", "# comment"}}
+
+	content := restoreEnvContentFromData(data)
+
+	assert.Equal(t, "KEY1=value1\nKEY2=value2\n# comment", content)
+}
+
+// =============================================================================
+// PushEnvCore 複数ファイル対応のテスト
+// =============================================================================
+
+// 正常系: 複数の .env ファイルを push
+func TestPushEnvCore_MultipleEnvFiles(t *testing.T) {
+	bw := &mockBwClient{
+		folderID:   "folder-123",
+		itemByName: nil, // 新規作成
+	}
+	fs := &mockFileSystem{
+		dirEntries: []DirEntry{
+			&mockDirEntry{name: ".env", isDir: false},
+			&mockDirEntry{name: ".env.staging", isDir: false},
+			&mockDirEntry{name: ".env.production", isDir: false},
+		},
+		readContentMap: map[string][]byte{
+			"/project-root/.env":            []byte("KEY=base\n"),
+			"/project-root/.env.staging":    []byte("KEY=staging\n"),
+			"/project-root/.env.production": []byte("KEY=production\n"),
+		},
+	}
+	logger := &mockLogger{}
+	cfg := &config.Config{}
+
+	err := PushEnvCore(
+		".",
+		"my-project",
+		fs,
+		bw,
+		cfg,
+		func() (string, error) { return "pwd", nil },
+		logger,
+	)
+
+	assert.NoError(t, err)
+	assert.Contains(t, bw.calls, "CreateNoteItem(folder-123,my-project)")
+}
+
+// 正常系: .example ファイルは除外される
+func TestPushEnvCore_ExcludesExampleFiles(t *testing.T) {
+	bw := &mockBwClient{
+		folderID:   "folder-123",
+		itemByName: nil,
+	}
+	fs := &mockFileSystem{
+		dirEntries: []DirEntry{
+			&mockDirEntry{name: ".env", isDir: false},
+			&mockDirEntry{name: ".env.example", isDir: false},
+			&mockDirEntry{name: ".env.staging", isDir: false},
+			&mockDirEntry{name: ".env.staging.example", isDir: false},
+		},
+		readContentMap: map[string][]byte{
+			"/project-root/.env":         []byte("KEY=base\n"),
+			"/project-root/.env.staging": []byte("KEY=staging\n"),
+		},
+	}
+	logger := &mockLogger{}
+	cfg := &config.Config{}
+
+	err := PushEnvCore(
+		".",
+		"my-project",
+		fs,
+		bw,
+		cfg,
+		func() (string, error) { return "pwd", nil },
+		logger,
+	)
+
+	assert.NoError(t, err)
+
+	// ReadFile が .example ファイルに対して呼ばれていないことを確認
+	for _, call := range fs.calls {
+		assert.NotContains(t, call, ".example")
+	}
+}
+
+// 異常系: .env ファイルが一つもない
+func TestPushEnvCore_NoEnvFiles(t *testing.T) {
+	bw := &mockBwClient{folderID: "folder-123"}
+	fs := &mockFileSystem{
+		dirEntries: []DirEntry{
+			&mockDirEntry{name: "README.md", isDir: false},
+			&mockDirEntry{name: ".env.example", isDir: false}, // example は除外
+		},
+	}
+	logger := &mockLogger{}
+	cfg := &config.Config{}
+
+	err := PushEnvCore(
+		"/some/path",
+		"my-project",
+		fs,
+		bw,
+		cfg,
+		func() (string, error) { return "pwd", nil },
+		logger,
+	)
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "no .env files found")
+}
+
+// =============================================================================
+// PullEnvCore 複数ファイル対応のテスト
+// =============================================================================
+
+// 正常系: 複数の .env ファイルを pull
+func TestPullEnvCore_MultipleEnvFiles(t *testing.T) {
+	multiEnvJSON := `{".env":{"lines":["KEY=base"]},".env.staging":{"lines":["KEY=staging"]}}`
+	bw := &mockBwClient{
+		folderID:   "folder-123",
+		itemByName: &FullItem{ID: "item-456", Name: "my-project", Notes: multiEnvJSON},
+	}
+	fs := &mockFileSystem{
+		statInfo: &mockFileInfo{notExist: true},
+	}
+	logger := &mockLogger{}
+	cfg := &config.Config{}
+
+	err := PullEnvCore(
+		".",
+		"my-project",
+		fs,
+		bw,
+		cfg,
+		func() (string, error) { return "pwd", nil },
+		func(path string) (bool, error) { return true, nil },
+		logger,
+	)
+
+	assert.NoError(t, err)
+
+	// 両方のファイルが書き込まれたことを確認
+	assert.Contains(t, fs.writtenFiles, "/project-root/.env")
+	assert.Contains(t, fs.writtenFiles, "/project-root/.env.staging")
+	assert.Equal(t, "KEY=base", string(fs.writtenFiles["/project-root/.env"]))
+	assert.Equal(t, "KEY=staging", string(fs.writtenFiles["/project-root/.env.staging"]))
+}
+
+// 正常系: 旧形式（単一ファイル）との下位互換性
+func TestPullEnvCore_LegacyFormat(t *testing.T) {
+	// 旧形式: {"lines":["KEY=value"]}
+	legacyJSON := `{"lines":["KEY=value"]}`
+	bw := &mockBwClient{
+		folderID:   "folder-123",
+		itemByName: &FullItem{ID: "item-456", Name: "my-project", Notes: legacyJSON},
+	}
+	fs := &mockFileSystem{
+		statInfo: &mockFileInfo{notExist: true},
+	}
+	logger := &mockLogger{}
+	cfg := &config.Config{}
+
+	err := PullEnvCore(
+		".",
+		"my-project",
+		fs,
+		bw,
+		cfg,
+		func() (string, error) { return "pwd", nil },
+		func(path string) (bool, error) { return true, nil },
+		logger,
+	)
+
+	assert.NoError(t, err)
+	assert.Contains(t, fs.calls, "WriteFile(/project-root/.env)")
+}
+
+// 正常系: 一部のファイルの上書きをキャンセル
+func TestPullEnvCore_PartialOverwriteCancel(t *testing.T) {
+	multiEnvJSON := `{".env":{"lines":["KEY=base"]},".env.staging":{"lines":["KEY=staging"]}}`
+	bw := &mockBwClient{
+		folderID:   "folder-123",
+		itemByName: &FullItem{ID: "item-456", Name: "my-project", Notes: multiEnvJSON},
+	}
+	fs := &mockFileSystem{
+		statInfoMap: map[string]FileInfo{
+			"/project-root/.env":         &mockFileInfo{notExist: false}, // 存在する
+			"/project-root/.env.staging": &mockFileInfo{notExist: true},  // 存在しない
+		},
+	}
+	logger := &mockLogger{}
+	cfg := &config.Config{}
+
+	confirmCalls := []string{}
+	err := PullEnvCore(
+		".",
+		"my-project",
+		fs,
+		bw,
+		cfg,
+		func() (string, error) { return "pwd", nil },
+		func(path string) (bool, error) {
+			confirmCalls = append(confirmCalls, path)
+			// .env は上書きをキャンセル、.env.staging は許可
+			if path == "/project-root/.env" {
+				return false, nil
+			}
+			return true, nil
+		},
+		logger,
+	)
+
+	assert.NoError(t, err)
+
+	// .env の上書き確認が呼ばれたことを確認
+	assert.Contains(t, confirmCalls, "/project-root/.env")
+
+	// .env は書き込まれない、.env.staging は書き込まれる
+	assert.NotContains(t, fs.writtenFiles, "/project-root/.env")
+	assert.Contains(t, fs.writtenFiles, "/project-root/.env.staging")
+}
+
+// =============================================================================
+// GetPushedEnvFiles / GetPulledEnvFiles のテスト
+// =============================================================================
+
+// 正常系: GetPushedEnvFiles でファイル名一覧を取得
+func TestGetPushedEnvFiles_Success(t *testing.T) {
+	fs := &mockFileSystem{
+		dirEntries: []DirEntry{
+			&mockDirEntry{name: ".env", isDir: false},
+			&mockDirEntry{name: ".env.staging", isDir: false},
+			&mockDirEntry{name: ".env.example", isDir: false}, // 除外される
+		},
+	}
+
+	files, err := GetPushedEnvFiles(".", fs)
+
+	assert.NoError(t, err)
+	assert.Len(t, files, 2)
+	assert.Contains(t, files, ".env")
+	assert.Contains(t, files, ".env.staging")
+	assert.NotContains(t, files, ".env.example")
+}
+
+// 正常系: GetPulledEnvFiles でファイル名一覧を取得
+func TestGetPulledEnvFiles_Success(t *testing.T) {
+	multiEnvJSON := `{".env":{"lines":["KEY=base"]},".env.staging":{"lines":["KEY=staging"]},".env.production":{"lines":["KEY=prod"]}}`
+	bw := &mockBwClient{
+		folderID:   "folder-123",
+		itemByName: &FullItem{ID: "item-456", Name: "my-project", Notes: multiEnvJSON},
+	}
+	logger := &mockLogger{}
+	cfg := &config.Config{}
+
+	files, err := GetPulledEnvFiles(
+		"my-project",
+		bw,
+		cfg,
+		func() (string, error) { return "pwd", nil },
+		logger,
+	)
+
+	assert.NoError(t, err)
+	assert.Len(t, files, 3)
+	// .env が最初に来ることを確認
+	assert.Equal(t, ".env", files[0])
+}
+
+// 正常系: GetPulledEnvFiles で旧形式の場合
+func TestGetPulledEnvFiles_LegacyFormat(t *testing.T) {
+	legacyJSON := `{"lines":["KEY=value"]}`
+	bw := &mockBwClient{
+		folderID:   "folder-123",
+		itemByName: &FullItem{ID: "item-456", Name: "my-project", Notes: legacyJSON},
+	}
+	logger := &mockLogger{}
+	cfg := &config.Config{}
+
+	files, err := GetPulledEnvFiles(
+		"my-project",
+		bw,
+		cfg,
+		func() (string, error) { return "pwd", nil },
+		logger,
+	)
+
+	assert.NoError(t, err)
+	assert.Len(t, files, 1)
+	assert.Equal(t, ".env", files[0])
+}
+
+// =============================================================================
+// isExampleFile / sortEnvFiles のテスト
+// =============================================================================
+
+// isExampleFile のテスト
+func TestIsExampleFile(t *testing.T) {
+	assert.True(t, isExampleFile(".env.example"))
+	assert.True(t, isExampleFile(".env.staging.example"))
+	assert.True(t, isExampleFile(".env.example.staging"))
+	assert.False(t, isExampleFile(".env"))
+	assert.False(t, isExampleFile(".env.staging"))
+	assert.False(t, isExampleFile(".env.local"))
+}
+
+// sortEnvFiles のテスト
+func TestSortEnvFiles(t *testing.T) {
+	files := []string{
+		"/path/.env.staging",
+		"/path/.env.production",
+		"/path/.env",
+		"/path/.env.local",
+	}
+
+	sortEnvFiles(files)
+
+	assert.Equal(t, "/path/.env", files[0])
+	assert.Equal(t, "/path/.env.local", files[1])
+	assert.Equal(t, "/path/.env.production", files[2])
+	assert.Equal(t, "/path/.env.staging", files[3])
+}
+
+// sortFileNames のテスト
+func TestSortFileNames(t *testing.T) {
+	names := []string{".env.staging", ".env.production", ".env", ".env.local"}
+
+	sortFileNames(names)
+
+	assert.Equal(t, ".env", names[0])
+	assert.Equal(t, ".env.local", names[1])
+	assert.Equal(t, ".env.production", names[2])
+	assert.Equal(t, ".env.staging", names[3])
 }

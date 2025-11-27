@@ -62,9 +62,27 @@ func runPull(cmd *cobra.Command, args []string) {
 	fs := infra.NewFileSystem()
 	logger := infra.NewLogger()
 
+	// Get list of env files to be pulled
+	envFiles, err := core.GetPulledEnvFiles(projectName, bw, cfg, utils.InputPassword, logger)
+	if err != nil {
+		utils.Errorln("[ERROR] Failed to get env files info:", err)
+		os.Exit(1)
+	}
+
+	if len(envFiles) == 0 {
+		utils.Errorln("[ERROR] No env files found in Bitwarden for project:", projectName)
+		os.Exit(1)
+	}
+
+	// Display files to be pulled
+	utils.Infoln("[INFO] Found", len(envFiles), "env file(s) to pull:")
+	for _, f := range envFiles {
+		utils.Infoln("  -", f)
+	}
+
 	// confirmOverwrite wrapper
 	confirmOverwrite := func(path string) (bool, error) {
-		return utils.ConfirmOverwrite(fmt.Sprintf(".env file already exists in %s. Overwrite? (y/N): ", path))
+		return utils.ConfirmOverwrite(fmt.Sprintf("%s already exists. Overwrite? (y/N): ", filepath.Base(path)))
 	}
 
 	// Call core logic
@@ -83,5 +101,5 @@ func runPull(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	utils.Successln("[INFO] ✅ .env file pulled successfully!")
+	utils.Successln("[INFO] ✅", len(envFiles), "env file(s) pulled successfully!")
 }
