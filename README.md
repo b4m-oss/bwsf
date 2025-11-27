@@ -28,17 +28,64 @@ This project migrates our hand-maded shell scripts to modern CLI command with Go
 
 ### Machine OS
 
-- [Is planning] macOS
+- macOS
 - [Is planning] Linux
 - [Is planning] Windows
 
 ## Installation
 
-[!Note]
-This is under planning.
+| OS | command |
+|----|----|
+| macOS | brew tap b4m-oss/tap && brew install bwenv |
 
-- **macOS & Linux**: Homebrew
-- **Windows**: Chocolaty
+## Confirm installation
+
+```shell
+bwenv -v
+# bwenv version 0.5.5
+```
+
+## Usage
+
+### Initial setup
+
+```shell
+bwenv setup
+```
+
+Set up your Bitwarden host and your account information.
+
+### Pull .env file from Bitwarden host
+
+```shell
+cd /path/to/your_project
+bwenv pull
+```
+
+bwenv searchs your .env data in Bitwarden host with the current directory's name.
+If it exists, pull data as .env file at current directory.
+If already .env files current directory, bwenv asks overwrite them or not.
+The data is stored as Bitwarden's Note item.
+
+### Push .env file to Bitwarden host
+
+bwenv pushs your .env data at the current directory to your Bitwarden host.
+If it exists same name Bitwarden's Note item in dotenvs folder, bwenv asks overwrite it or not.
+
+### List up .env datas in Bitwarden host
+
+```shell
+bwenv list
+```
+
+List up your .env datas from Bitwarden host.
+They will showed up project names list on stdout.
+
+## Uninstall
+
+```shell
+brew uninstall bwenv
+```
 
 ## Development
 
