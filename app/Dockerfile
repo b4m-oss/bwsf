@@ -2,6 +2,12 @@ FROM golang:1.24-alpine
 
 WORKDIR /app
 
+# Node.jsとnpmをインストール（bwコマンド用）
+RUN apk add --no-cache nodejs npm
+
+# Bitwarden CLIをグローバルにインストール
+RUN npm install -g @bitwarden/cli
+
 # 開発に必要なツールをインストール
 RUN apk add --no-cache git make
 
