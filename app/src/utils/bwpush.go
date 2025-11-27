@@ -40,6 +40,9 @@ func GetItemByName(folderID, itemName string) (*FullItem, error) {
 		return nil, fmt.Errorf("bw command is not installed")
 	}
 
+	// Start spinner for sync
+	StartSpinner("Syncing...")
+
 	// Sync with server first to ensure we have the latest data
 	syncCmd := exec.Command("bw", "sync")
 	syncOutput, syncErr := syncCmd.CombinedOutput()
@@ -48,9 +51,13 @@ func GetItemByName(folderID, itemName string) (*FullItem, error) {
 		syncErrMsg := strings.TrimSpace(string(syncOutput))
 		if syncErrMsg != "" && !strings.Contains(syncErrMsg, "already synced") {
 			// Only log if it's not just "already synced" message
+			StopSpinner()
 			fmt.Printf("[INFO] Sync warning: %s (continuing anyway)\n", syncErrMsg)
 		}
 	}
+
+	// Update spinner message for fetching items
+	UpdateSpinnerMessage("Fetching items...")
 
 	// Execute bw list items command with folder filter
 	cmd := exec.Command("bw", "list", "items", "--folderid", folderID)
@@ -87,11 +94,14 @@ func GetItemByName(folderID, itemName string) (*FullItem, error) {
 	// Find item by name
 	for _, item := range items {
 		if item.Name == itemName {
+			// Stop spinner before calling GetItemByID (it has its own spinner)
+			StopSpinner()
 			// Get full item details using bw get item to ensure we have the latest data
 			return GetItemByID(item.ID)
 		}
 	}
 
+	StopSpinner()
 	return nil, nil // Item not found, but no error
 }
 
@@ -102,6 +112,10 @@ func GetItemByID(itemID string) (*FullItem, error) {
 	if err != nil {
 		return nil, fmt.Errorf("bw command is not installed")
 	}
+
+	// Start spinner
+	StartSpinner("Getting item...")
+	defer StopSpinner()
 
 	// Execute bw get item command
 	cmd := exec.Command("bw", "get", "item", itemID)
@@ -145,6 +159,10 @@ func CreateNoteItem(folderID, name, notes string) error {
 	if err != nil {
 		return fmt.Errorf("bw command is not installed")
 	}
+
+	// Start spinner
+	StartSpinner("Creating item...")
+	defer StopSpinner()
 
 	// Create note item structure
 	item := NoteItem{
@@ -244,6 +262,10 @@ func UpdateNoteItem(itemID, notes string) error {
 	if err != nil {
 		return fmt.Errorf("bw command is not installed")
 	}
+
+	// Start spinner
+	StartSpinner("Updating item...")
+	defer StopSpinner()
 
 	// Get the existing item
 	getCmd := exec.Command("bw", "get", "item", itemID)

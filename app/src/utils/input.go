@@ -87,7 +87,7 @@ func InputPassword() (string, error) {
 func ConfirmOverwrite(message string) (bool, error) {
 	reader := bufio.NewReader(os.Stdin)
 
-	Question(message)
+	Question("%s", message)
 	input, err := reader.ReadString('\n')
 	if err != nil {
 		return false, fmt.Errorf("failed to read input: %w", err)

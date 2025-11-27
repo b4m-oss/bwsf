@@ -33,6 +33,10 @@ func GetDotenvsFolderID() (string, error) {
 		return "", fmt.Errorf("bw command is not installed")
 	}
 
+	// Start spinner
+	StartSpinner("Fetching folders...")
+	defer StopSpinner()
+
 	// Execute bw list folders command
 	cmd := exec.Command("bw", "list", "folders")
 	output, err := cmd.CombinedOutput()
@@ -84,6 +88,10 @@ func ListItemsInFolder(folderID string) ([]Item, error) {
 		return nil, fmt.Errorf("bw command is not installed")
 	}
 
+	// Start spinner
+	StartSpinner("Listing items...")
+	defer StopSpinner()
+
 	// Execute bw list items command with folder filter
 	cmd := exec.Command("bw", "list", "items", "--folderid", folderID)
 	output, err := cmd.CombinedOutput()
@@ -129,6 +137,10 @@ func BwUnlock(masterPassword string) (bool, string) {
 	if err != nil {
 		return false, "bw command is not installed"
 	}
+
+	// Start spinner
+	StartSpinner("Unlocking vault...")
+	defer StopSpinner()
 
 	// Declare variables at function scope
 	var output []byte

@@ -1,15 +1,16 @@
 # Todo
 
-## v0.6.0
+# v0.7.0
 
-- ✅ GPG署名
-- ✅ ドキュメント整備
-- ✅ Goバージョンの差異を統一
+- [ ] enhance: stdoutの待機でアニメーションをつける
+- [ ] プルリクマージ時に、CI/CDでテストを行う（逆に、リリース時は行わない）
 
+# v0.8.0
+
+- [ ] E2Eテスト（Vaultwarden）
 
 ## untill v1.0.0
 
-- [ ] E2Eテスト（Vaultwarden）
 - [ ] local/develop/staging/productionなどの、各環境への対応
 - [ ] bwコマンド依存からの脱却
 - [ ] dotenvsフォルダがない場合、新規作成するかどうか
