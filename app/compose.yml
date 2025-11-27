@@ -9,9 +9,12 @@ services:
       - .:/app
       # Goモジュールキャッシュを永続化
       - go-mod-cache:/go/pkg/mod
+      # .configディレクトリを永続化
+      - ./.config:/root/.config
     working_dir: /app
     stdin_open: true
     tty: true
+    restart: unless-stopped
     command: go run src/main.go
 
 volumes:
