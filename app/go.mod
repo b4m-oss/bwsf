@@ -1,6 +1,6 @@
 module bwenv
 
-go 1.23
+go 1.24
 
 require (
 	github.com/manifoldco/promptui v0.9.0
