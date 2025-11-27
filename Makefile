@@ -17,8 +17,8 @@ up: ## コンテナを起動して実行
 down: ## コンテナを停止・削除
 	cd $(APP_DIR) && docker compose down
 
-run: ## Hello Worldを実行
-	cd $(APP_DIR) && docker compose run --rm golang go run src/main.go
+run: ## アプリケーションを実行（サブコマンドを指定可能: make run setup）
+	cd $(APP_DIR) && docker compose run --rm golang go run src/main.go $(filter-out $@,$(MAKECMDGOALS))
 
 shell: ## コンテナ内でシェルを起動
 	cd $(APP_DIR) && docker compose run --rm golang sh
@@ -39,3 +39,6 @@ clean: ## コンテナ、イメージ、ボリュームを削除
 
 rebuild: clean build ## クリーンビルドを実行
 
+# サブコマンドをターゲットとして認識させないようにする
+%:
+	@:

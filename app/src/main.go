@@ -1,8 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"bwenv/src/cmd"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	cmd.Execute()
 }
 
