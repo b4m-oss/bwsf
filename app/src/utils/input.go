@@ -13,23 +13,18 @@ import (
 
 // SelectHostType prompts user to select between Cloud and Self-hosted
 func SelectHostType() (string, error) {
-	reader := bufio.NewReader(os.Stdin)
+	prompt := promptui.Select{
+		Label: "Bitwarden Cloud or Self-hosted?",
+		Items: []string{"cloud", "selfhosted"},
+	}
 
-	for {
-		Question("Bitwarden Cloud or Self-hosted? (cloud/selfhosted): ")
-		input, err := reader.ReadString('\n')
-		if err != nil {
-			return "", fmt.Errorf("failed to read input: %w", err)
-		}
-
-	index, _, err := prompt.Run()
+	index, result, err := prompt.Run()
 	if err != nil {
 		return "", fmt.Errorf("failed to select host type: %w", err)
 	}
 
-		Warningln("Invalid input. Please enter 'cloud' or 'selfhosted'")
-	}
-	return "selfhosted", nil
+	_ = index // index is not used but returned by prompt.Run()
+	return result, nil
 }
 
 // InputURL prompts user to enter self-hosted URL
