@@ -14,6 +14,10 @@ func BwLogin(email, password, serverURL string) (bool, string) {
 		return false, "bw command is not installed"
 	}
 
+	// Start spinner
+	StartSpinner("Logging in...")
+	defer StopSpinner()
+
 	// If self-hosted, configure server first
 	// But first check if we need to logout
 	if serverURL != "" {
