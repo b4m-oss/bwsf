@@ -171,3 +171,4 @@ func TestSaveConfig_Overwrite(t *testing.T) {
 	assert.Equal(t, "new@example.com", loaded.Email)
 }
 
+

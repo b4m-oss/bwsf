@@ -82,3 +82,4 @@ func UpdateSpinnerMessage(message string) {
 	}
 }
 
+

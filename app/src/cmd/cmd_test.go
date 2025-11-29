@@ -136,3 +136,4 @@ func TestSetupCmd_Description(t *testing.T) {
 	assert.NotEmpty(t, setupCmd.Long)
 }
 
+

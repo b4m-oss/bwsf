@@ -13,3 +13,7 @@ coverage.out
 
 # GoReleaser
 app/dist/
+
+.vitepress/cache/
+.vitepress/dist/
+.vitepress/node_modules/

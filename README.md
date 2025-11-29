@@ -2,6 +2,8 @@
 
 bwenv is a CLI tool that uses [Bitwarden](https://bitwarden.com/) to manage .env files.
 
+[日本語版はこちら](./README_ja.md)
+
 ## 🚨🚨 BREAKING CHANGE 🚨🚨
 
 From v0.9.0, bwenv stores multiple enviroment .env files, like `.env | .env.staging | .env.production`.
@@ -33,6 +35,8 @@ This project migrates our hand-maded shell scripts to modern CLI command with Go
 
 [To install bw command, please read this document.](https://bitwarden.com/help/cli/#download-and-install)
 
+**Homebrew**: Need to install bwenv.
+
 ### Machine OS
 
 - macOS
@@ -43,16 +47,13 @@ This project migrates our hand-maded shell scripts to modern CLI command with Go
 
 | OS | command |
 |----|----|
-| macOS | brew tap b4m-oss/tap && brew install bwenv |
-| Linux | brew tap b4m-oss/tap && brew install bwenv |
+| macOS / Linux | brew tap b4m-oss/tap && brew install bwenv |
 
-> Note: Linux requires [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux) to be installed first.
-
-## Confirm installation
+## Verify installation
 
 ```shell
 bwenv -v
-# bwenv version 0.5.5
+# bwenv version 0.10.0
 ```
 
 ## Usage
@@ -96,6 +97,44 @@ They will showed up project names list on stdout.
 ```shell
 brew uninstall bwenv
 ```
+
+## FAQ
+
+<details>
+<summary>Q. I don't have Bitwarden account.</summary>
+
+To use bwenv, you need a Bitwarden account.
+
+You can access to [Bitwarden Cloud](https://bitwarden.com/), sign up a account.
+
+No fee, No credit card.
+
+</details>
+
+<details>
+<summary>Q. I'm Bitwarden self hosted user.</summary>
+
+Ofcourse, bwenv is available for Bitwarden self hosted users.
+
+You can input your self hosted URL when initial setup.
+
+</details>
+
+<details>
+<summary>Q. How does my .env file store at Bitwarden host?</summary>
+
+Your .env files are converted to JSON syntax. bwenv creates Bitwarden Note item, put into Note section to JSON.
+
+</details>
+
+<details>
+<summary>Q. Where are my Bitwarden account info</summary>
+
+bwenv stores your config data at `~/.config/bwenv/`.
+
+But, secure information (ex. password) is never stored.
+
+</details>
 
 ## Development
 

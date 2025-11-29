@@ -112,3 +112,4 @@ func TestRealFileInfo_IsNotExist_False(t *testing.T) {
 	assert.False(t, info.IsNotExist())
 }
 
+
