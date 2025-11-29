@@ -20,6 +20,33 @@ Bitwarden内に、dotenvsというフォルダを、.env専用のフォルダと
 dotenvsディレクトリのログインアイテムのドメイン名に相当する部分が「プロジェクト名」となる
 例：「my-todo-app」など
 
+## 対応ファイル
+
+### 対象ファイル
+
+`.env`で始まるすべてのファイルが対象となります。
+
+例:
+- `.env`
+- `.env.local`
+- `.env.development`
+- `.env.staging`
+- `.env.production`
+
+### 除外ファイル
+
+ファイル名に`.example`を含むファイルは除外されます。
+
+例:
+- `.env.example` → 除外
+- `.env.local.example` → 除外
+- `.env.example.local` → 除外
+
+### 注意事項
+
+- 上記の条件を満たすファイルが1つ以上あれば、pushコマンドを実行可能です
+- `.env`ファイルが存在しなくても、`.env.local`などがあれば問題ありません
+
 ## 機能
 
 ### bwenv pull --output <dirname>
@@ -32,6 +59,8 @@ dotenvsディレクトリのログインアイテムのドメイン名に相当�
 
 カレントディレクトリ名をプロジェクト名として、dotenvsの中を検索
 一致するプロジェクト名のBitwardenログインアイテムがあれば、上書きするかどうかをy/Nで質問
+
+対象ファイルの詳細は「対応ファイル」セクションを参照
 
 ### bwenv list
 

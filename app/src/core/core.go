@@ -152,29 +152,14 @@ func PushEnvCore(
 	promptPassword func() (string, error),
 	logger Logger,
 ) error {
-	// ディレクトリを正規化
-	actualDir := fromDir
-	if fromDir == "." || fromDir == ".." {
-		actualDir = "/project-root"
-	}
-
 	// .env* ファイルを検出
-	envFiles, err := findEnvFilesFromFS(fs, actualDir)
+	envFiles, err := findEnvFilesFromFS(fs, fromDir)
 	if err != nil {
-		// フォールバック: fromDir が "." または ".." の場合、/project-root を試す
-		if fromDir == "." || fromDir == ".." {
-			envFiles, err = findEnvFilesFromFS(fs, "/project-root")
-			if err != nil {
-				return fmt.Errorf("failed to find .env files: %w", err)
-			}
-			actualDir = "/project-root"
-		} else {
-			return fmt.Errorf("failed to find .env files: %w", err)
-		}
+		return fmt.Errorf("failed to find .env files: %w", err)
 	}
 
 	if len(envFiles) == 0 {
-		return fmt.Errorf("no .env files found in %s", actualDir)
+		return fmt.Errorf("no .env files found in %s", fromDir)
 	}
 
 	// 各ファイルを読み込んで MultiEnvData に格納
@@ -242,21 +227,9 @@ func GetPushedEnvFiles(
 	fromDir string,
 	fs FileSystem,
 ) ([]string, error) {
-	actualDir := fromDir
-	if fromDir == "." || fromDir == ".." {
-		actualDir = "/project-root"
-	}
-
-	envFiles, err := findEnvFilesFromFS(fs, actualDir)
+	envFiles, err := findEnvFilesFromFS(fs, fromDir)
 	if err != nil {
-		if fromDir == "." || fromDir == ".." {
-			envFiles, err = findEnvFilesFromFS(fs, "/project-root")
-			if err != nil {
-				return nil, err
-			}
-		} else {
-			return nil, err
-		}
+		return nil, err
 	}
 
 	// ファイル名のみを返す
@@ -340,11 +313,6 @@ func PullEnvCore(
 	confirmOverwrite func(path string) (bool, error),
 	logger Logger,
 ) error {
-	// outputDir を正規化
-	if outputDir == "." || outputDir == ".." {
-		outputDir = "/project-root"
-	}
-
 	// dotenvs フォルダ ID を取得
 	var folderID string
 	err := WithUnlockRetry(bw, cfg, promptPassword, logger, func() error {
@@ -387,7 +355,8 @@ func PullEnvCore(
 	}
 
 	// ディレクトリを作成（必要に応じて）
-	if outputDir != "." && outputDir != "/project-root" {
+	// "." や ".." 以外の場合のみディレクトリ作成を試みる
+	if outputDir != "." && outputDir != ".." {
 		if err := fs.MkdirAll(outputDir, 0755); err != nil {
 			return fmt.Errorf("failed to create output directory: %w", err)
 		}
