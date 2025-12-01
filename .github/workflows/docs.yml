@@ -1,12 +1,10 @@
 name: Deploy Docs
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
       - main
-    paths:
-      - 'docs/site/**'
-      - '.github/workflows/docs.yml'
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -23,6 +21,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'docs')
     steps:
       - name: Checkout
         uses: actions/checkout@v4

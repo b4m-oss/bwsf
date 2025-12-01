@@ -44,7 +44,7 @@ npm install -g @bitwarden/cli
 
 Bitwardenには、2種類のホスティング形式があります
 
-- **[Bitwarden Cloud]()**: Bitwardenが、公式のホスティングしているSaaSサービスです
+- **[Bitwarden Cloud](https://bitwarden.com/)**: Bitwardenが、公式のホスティングしているSaaSサービスです
 - **Bitwardenセルフホスト**: BitwardenはOSSとして公開されており、セルフホストすることも可能です
 
 `bwsf`は、このどちらにも対応しています。
