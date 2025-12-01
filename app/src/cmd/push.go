@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"bwenv/src/config"
-	"bwenv/src/core"
-	"bwenv/src/infra"
-	"bwenv/src/utils"
+	"bwsf/src/config"
+	"bwsf/src/core"
+	"bwsf/src/infra"
+	"bwsf/src/utils"
 	"os"
 	"path/filepath"
 

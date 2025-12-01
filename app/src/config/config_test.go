@@ -12,12 +12,12 @@ import (
 // GetConfigPath のテスト
 // =============================================================================
 
-// 正常系: ホームディレクトリ配下の .config/bwenv/config.json パスが返る
+// 正常系: ホームディレクトリ配下の .config/bwsf/config.json パスが返る
 func TestGetConfigPath_Success(t *testing.T) {
 	path, err := GetConfigPath()
 
 	assert.NoError(t, err)
-	assert.Contains(t, path, ".config/bwenv/config.json")
+	assert.Contains(t, path, ".config/bwsf/config.json")
 
 	// ホームディレクトリで始まることを確認
 	homeDir, _ := os.UserHomeDir()
@@ -50,7 +50,7 @@ func TestLoadConfig_Success(t *testing.T) {
 	defer os.Setenv("HOME", origHome)
 
 	// 設定ファイルを作成
-	configDir := filepath.Join(tmpDir, ".config", "bwenv")
+	configDir := filepath.Join(tmpDir, ".config", "bwsf")
 	os.MkdirAll(configDir, 0755)
 	configPath := filepath.Join(configDir, "config.json")
 	configContent := `{"host_type":"selfhosted","selfhosted_url":"https://bw.example.com","email":"test@example.com"}`
@@ -73,7 +73,7 @@ func TestLoadConfig_InvalidJSON(t *testing.T) {
 	defer os.Setenv("HOME", origHome)
 
 	// 壊れた JSON を書き込む
-	configDir := filepath.Join(tmpDir, ".config", "bwenv")
+	configDir := filepath.Join(tmpDir, ".config", "bwsf")
 	os.MkdirAll(configDir, 0755)
 	configPath := filepath.Join(configDir, "config.json")
 	os.WriteFile(configPath, []byte("not valid json"), 0600)
@@ -107,7 +107,7 @@ func TestSaveConfig_Success(t *testing.T) {
 	assert.NoError(t, err)
 
 	// ファイルが作成されていることを確認
-	configPath := filepath.Join(tmpDir, ".config", "bwenv", "config.json")
+	configPath := filepath.Join(tmpDir, ".config", "bwsf", "config.json")
 	_, statErr := os.Stat(configPath)
 	assert.NoError(t, statErr)
 
@@ -134,7 +134,7 @@ func TestSaveConfig_CreatesDirectory(t *testing.T) {
 	assert.NoError(t, err)
 
 	// ディレクトリが作成されていることを確認
-	configDir := filepath.Join(tmpDir, ".config", "bwenv")
+	configDir := filepath.Join(tmpDir, ".config", "bwsf")
 	info, statErr := os.Stat(configDir)
 	assert.NoError(t, statErr)
 	assert.True(t, info.IsDir())

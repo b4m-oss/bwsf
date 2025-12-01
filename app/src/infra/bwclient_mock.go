@@ -1,7 +1,7 @@
 package infra
 
 import (
-	"bwenv/src/core"
+	"bwsf/src/core"
 	"fmt"
 	"path/filepath"
 	"sort"

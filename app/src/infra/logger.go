@@ -1,7 +1,7 @@
 package infra
 
 import (
-	"bwenv/src/utils"
+	"bwsf/src/utils"
 )
 
 // RealLogger は core.Logger インターフェースの実装で、

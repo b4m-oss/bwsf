@@ -1,8 +1,8 @@
 package infra
 
 import (
-	"bwenv/src/core"
-	"bwenv/src/utils"
+	"bwsf/src/core"
+	"bwsf/src/utils"
 )
 
 // RealBwClient は core.BwClient インターフェースの実装で、

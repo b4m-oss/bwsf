@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: bwenv-golang-dev
+    container_name: bwsf-golang-dev
     volumes:
       # ソースコードをマウント（ホットリロード対応）
       - .:/app

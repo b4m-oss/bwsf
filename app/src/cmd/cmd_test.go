@@ -16,7 +16,7 @@ import (
 // 正常系: rootCmd が正しく初期化されている
 func TestRootCmd_Initialized(t *testing.T) {
 	assert.NotNil(t, rootCmd)
-	assert.Equal(t, "bwenv", rootCmd.Use)
+	assert.Equal(t, "bwsf", rootCmd.Use)
 }
 
 // 正常系: rootCmd に Short/Long が設定されている

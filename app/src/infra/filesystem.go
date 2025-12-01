@@ -3,7 +3,7 @@ package infra
 import (
 	"os"
 
-	"bwenv/src/core"
+	"bwsf/src/core"
 )
 
 // RealFileSystem は core.FileSystem インターフェースの実装です。

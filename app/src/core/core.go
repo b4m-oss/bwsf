@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"bwenv/src/config"
+	"bwsf/src/config"
 )
 
 // BwClient は Bitwarden CLI とのやり取りを抽象化するインターフェースです。

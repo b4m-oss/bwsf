@@ -1,4 +1,4 @@
-# bwenv
+# bwsf
 
 ## 概要
 
@@ -49,19 +49,17 @@ dotenvsディレクトリのログインアイテムのドメイン名に相当�
 
 ## 機能
 
-### bwenv pull --output <dirname>
+### bwsf pull --output <dirname>
 
 カレントディレクトリ名をプロジェクト名として、dotenvsの中を検索
 一致するプロジェクトに保存されている.env情報を取り出し、カレントディレクトリまたは、指定ディレクトリに展開する
 既に、.envファイルがディレクトリ内に存在する場合は、上書きするかどうかをy/Nで質問
 
-### bwenv push --from <dirname>
+### bwsf push --from <dirname>
 
 カレントディレクトリ名をプロジェクト名として、dotenvsの中を検索
 一致するプロジェクト名のBitwardenログインアイテムがあれば、上書きするかどうかをy/Nで質問
 
-対象ファイルの詳細は「対応ファイル」セクションを参照
-
-### bwenv list
+### bwsf list
 
 Bitwardenのdotenvs内にあるアイテムの一覧をリスト表示

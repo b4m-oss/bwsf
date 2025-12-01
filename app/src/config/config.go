@@ -14,7 +14,7 @@ type Config struct {
 }
 
 const (
-	configDir  = ".config/bwenv"
+	configDir  = ".config/bwsf"
 	configFile = "config.json"
 )
 

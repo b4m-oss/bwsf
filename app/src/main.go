@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bwenv/src/cmd"
+	"bwsf/src/cmd"
 )
 
 func main() {

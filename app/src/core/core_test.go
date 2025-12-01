@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"bwenv/src/config"
+	"bwsf/src/config"
 
 	"github.com/stretchr/testify/assert"
 )

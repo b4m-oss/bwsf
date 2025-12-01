@@ -1,16 +1,16 @@
 package cmd
 
 import (
-	"bwenv/src/utils"
+	"bwsf/src/utils"
 	"os"
 
 	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "bwenv",
+	Use:     "bwsf",
 	Short:   "CLI tool to manage .env files using Bitwarden",
-	Long:    "bwenv is a CLI tool that uses Bitwarden to manage .env files",
+	Long:    "bwsf is a CLI tool that uses Bitwarden to manage .env files",
 	Version: Version,
 }
 
