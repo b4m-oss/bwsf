@@ -2,4 +2,39 @@
 @import './setup/initial.css';
 @import './components/button.css';
 
+.vp-doc pre {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  background-color: #f8fafc; /* うすいグレーなど。Shiki の色を邪魔しない程度に */
+}
 
+.vp-doc code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.875rem;
+}
+
+/* Shiki が出力するコードフェンス用の色適用 */
+.vp-code span {
+  color: var(--shiki-light);
+}
+
+html.dark .vp-code span,
+:root[class~="dark"] .vp-code span {
+  color: var(--shiki-dark);
+}
+
+@keyframes promptBlink {
+  0% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  /* 75% {
+    opacity: 1;
+  } */
+  100% {
+    opacity: 0;
+  }
+}

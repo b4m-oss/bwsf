@@ -1,10 +1,22 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, type Ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, type Ref, withDefaults, defineProps } from 'vue'
 import { useData, useRoute } from 'vitepress'
 import AppDropdown from './AppDropdown.vue'
 import IconLoader from './IconLoader.vue'
 
 type Appearance = 'auto' | 'light' | 'dark'
+
+const props = withDefaults(
+  defineProps<{
+    /**
+     * 設定パネル内などで、プルダウンではなくリストとして表示したい場合に true
+     */
+    inline?: boolean
+  }>(),
+  {
+    inline: false
+  }
+)
 
 const route = useRoute()
 const { isDark, theme, site } = useData()
@@ -168,7 +180,8 @@ function onSelect(mode: Appearance, close: () => void) {
 </script>
 
 <template>
-  <AppDropdown class="app-appearance-switch">
+  <!-- 通常: トップバー用のドロップダウン -->
+  <AppDropdown v-if="!props.inline" class="app-appearance-switch">
     <template #trigger="{ isOpen, toggle }">
       <button
         type="button"
@@ -178,7 +191,17 @@ function onSelect(mode: Appearance, close: () => void) {
         :title="title"
         @click="toggle"
       >
-        <IconLoader name="icon-theme-switch" :width="15" :height="15" fill="currentColor" aria-label="テーマを切り替える" />
+        <span class="text">
+          {{ currentLabel }}
+        </span>
+        <IconLoader
+          name="icon-chevron"
+          :width="12"
+          :height="12"
+          fill="currentColor"
+          aria-hidden="true"
+          class="chevron"
+        />
       </button>
     </template>
 
@@ -205,6 +228,38 @@ function onSelect(mode: Appearance, close: () => void) {
       </ul>
     </template>
   </AppDropdown>
+
+  <!-- インライン: 設定パネル内用のリスト表示 -->
+  <div v-else class="app-appearance-switch app-appearance-switch--inline">
+    <ul class="app-appearance-switch__menu app-appearance-switch__menu--inline" role="listbox">
+      <li
+        v-for="option in appearanceOptions"
+        :key="option.value"
+        class="app-appearance-switch__item"
+      >
+        <button
+          type="button"
+          class="app-appearance-switch__option"
+          role="option"
+          :aria-selected="appearance === option.value"
+          @click="applyAppearance(option.value)"
+        >
+          <IconLoader
+            name="icon-check"
+            :width="14"
+            :height="14"
+            stroke-color="var(--text-main)"
+            aria-hidden="true"
+            v-if="appearance === option.value"
+            class="icon-selected"
+          />
+          <span class="label">
+            {{ option.label }}
+          </span>
+        </button>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <style scoped>
@@ -214,19 +269,17 @@ function onSelect(mode: Appearance, close: () => void) {
   .app-appearance-switch__button {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     font-size: 1.1rem;
-    padding: 0.5rem 1rem;
-
-    .icon {
-      width: 1.25rem;
-      height: 1.25rem;
-      border-radius: 999px;
-      background: var(--bg-accent);
-    }
+    padding: 0.4rem 1.1rem;
 
     .text {
       white-space: nowrap;
+    }
+
+    .chevron {
+      transition: transform 0.2s ease;
     }
   }
 }
@@ -284,5 +337,14 @@ function onSelect(mode: Appearance, close: () => void) {
     }
 
   }
+}
+
+.app-appearance-switch__menu--inline {
+  position: static;
+  margin-top: 0;
+  min-width: 0;
+  border: none;
+  box-shadow: none;
+  padding: 0;
 }
 </style>

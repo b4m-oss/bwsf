@@ -10,6 +10,15 @@ export default defineConfig({
   
   // Clean URLs (no .html extension)
   cleanUrls: true,
+
+  // Markdown & syntax highlighting
+  // Shiki を利用してコードフェンスをハイライトする（デフォルト設定）
+  markdown: {
+    theme: {
+      light: 'github-light',
+      dark: 'github-dark'
+    }
+  },
   
   // Head meta tags (shared across all locales)
   head: [

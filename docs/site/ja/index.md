@@ -5,11 +5,18 @@ titleTemplate: bwsf - .env管理をもっと手軽に
 layout: home
 ---
 
+<script setup lang="ts">
+import { withBase } from 'vitepress'
+</script>
+
 <HomeLayout>
 
 <template #hero>
   <hgroup class="title">
-    <h1 class="heading-1">bwsf</h1>
+    <h1 class="heading-1">
+    <IconLoader name="icon-chevron" :width="64" :height="64" fill="transparent" class="prompt-icon" />
+    bwsf
+    </h1>
     <div class="description">
       <p>.envファイルの管理はCLIに任せる</p>
       <p>プロジェクトも、環境も、メンバーも、すべて一元管理する</p>
@@ -19,8 +26,8 @@ layout: home
   </hgroup>
   
   <nav class="hero-nav">
-    <a href="/guide/getting-started/" class="button button-super getting-started">今すぐスタート<IconLoader name="icon-arrow" :width="14" :height="14" :strokeColor="'#ffffff'" /></a>
-    <a href="https://github.com/b4m-oss/bwsf" class="button github" taget="_blank" rel="noopener">GitHub</a>
+    <a :href="withBase('/ja/guide/getting-started')" class="button button-super getting-started">今すぐスタート<IconLoader name="icon-arrow" :width="14" :height="14" :strokeColor="'#ffffff'" /></a>
+    <a href="https://github.com/b4m-oss/bwsf" class="button github" taget="_blank" rel="noopener"><IconLoader name="icon-github" :width="17" :height="17" fill="#ffffff" />GitHub</a>
     <p class="caption">
       <span class="dev-by">開発：<a href="https://b4m.co.jp/" target="_blank" rel="noopener">合同会社 知的・自転車</a></span>
     </p>
@@ -29,19 +36,30 @@ layout: home
 </template>
 
 <template #features>
-  <HeroFeatureCard title="たった4文字のコマンドライン" description="左手の指を4回動かすだけで打てる基本コマンド。オプションコマンドも、わかりやすくシンプルです。" />
-  <HeroFeatureCard title="複数の開発環境に対応" description="開発（.local）、ステージング（.staging）、本番（.production）など、開発に利用されている複数の環境をまとめて管理できます。" />
-  <HeroFeatureCard title="組織・メンバーで活用しやすい" description="Bitwardenは、組織での利用も可能です。開発メンバーだけをdotenvsフォルダーに招待し、必要な権限を与えることができます。" />
-  <HeroFeatureCard title="機密情報は外に出さない" description="Bitwardenは、オープンソースです。オンプレミスで運用することもできます。" />
+  <HeroFeatureCard title="たった4文字の<br>コマンドライン" description="左手の指を4回動かすだけで打てる基本コマンド。オプションコマンドも、わかりやすくシンプルです。" />
+  <HeroFeatureCard title="複数の開発環境に対応<br>独自名も可" description="開発（.local）、ステージング（.staging）、本番（.production）など、開発に利用されている複数の環境をまとめて管理できます。" />
+  <HeroFeatureCard title="組織・メンバーで<br>活用しやすい" description="Bitwardenは、組織での利用も可能です。開発メンバーだけをdotenvsフォルダーに招待し、必要な権限を与えることができます。" />
+  <HeroFeatureCard title="機密情報は外に出さない<br>自分たちで管理する" description="Bitwardenは、オープンソースです。オンプレミスで運用することもできます。" />
 </template>
 
 <style scoped>
 .title {
   .heading-1 {
+    position: relative;
     font-size: 7.2rem;
     font-weight: 800;
     color: var(--text-bold);
     margin-bottom: 3rem;
+    padding-left: 3rem;
+  }
+
+  .prompt-icon {
+    position: absolute;
+    top: calc(50% + .2rem);
+    transform: translateY(-50%);
+    left: -4rem;
+    opacity: 0;
+    animation: promptBlink 1.8s ease-out 0.1s infinite;
   }
 
   .description {
@@ -52,6 +70,8 @@ layout: home
     
     margin-bottom: 3rem;
   }
+
+  
 }
 
 .hero-nav {
@@ -65,11 +85,20 @@ layout: home
   .getting-started {
     grid-column: 1/2;
     grid-row: 1/2;
+    display: flex;
+    flex-flow: row;
+    gap: 1rem;
+    align-items: center;
   }
 
   .github {
     grid-column: 2/3;
     grid-row: 1/2;
+
+    display: flex;
+    flex-flow: row;
+    gap: .5rem;
+    align-items: center;
   }
 
   .caption {

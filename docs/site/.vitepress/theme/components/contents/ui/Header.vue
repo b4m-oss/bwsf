@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { withBase } from 'vitepress'
-import AppAppearanceSwitch from '../../common/ui/AppAppearanceSwitch.vue'
-import AppLanguageSwitch from '../../common/ui/AppLanguageSwitch.vue'
+// import AppAppearanceSwitch from '../../common/ui/AppAppearanceSwitch.vue'
+// import AppLanguageSwitch from '../../common/ui/AppLanguageSwitch.vue'
+import Config from './Config.vue';
 </script>
 
 <template>
@@ -27,8 +28,7 @@ import AppLanguageSwitch from '../../common/ui/AppLanguageSwitch.vue'
     </nav>
 
     <div class="header-configuration">
-      <AppLanguageSwitch />
-      <AppAppearanceSwitch />
+      <Config />
     </div>
   </header>
 </template>

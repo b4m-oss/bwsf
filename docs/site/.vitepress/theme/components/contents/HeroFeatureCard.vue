@@ -12,7 +12,7 @@ const props = defineProps<{
       <!-- {{ icon }} -->
         <p>🔐</p>
     </div>
-    <h2 class="feature-item__title">{{ title }}</h2>
+    <h2 class="feature-item__title" v-html="title"></h2>
     <div class="feature-item__description">{{ description }}</div>
   </section>
 </template>

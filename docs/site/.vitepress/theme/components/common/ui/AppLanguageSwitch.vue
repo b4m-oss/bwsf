@@ -1,8 +1,20 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, defineProps, withDefaults } from 'vue'
 import { useRoute, useData, withBase } from 'vitepress'
 import IconLoader from './IconLoader.vue'
 import AppDropdown from './AppDropdown.vue'
+
+const props = withDefaults(
+  defineProps<{
+    /**
+     * 設定パネル内などで、プルダウンではなくリストとして表示したい場合に true
+     */
+    inline?: boolean
+  }>(),
+  {
+    inline: false
+  }
+)
 
 const route = useRoute()
 const { site } = useData()
@@ -73,7 +85,8 @@ const currentLabel = computed(() => {
 </script>
 
 <template>
-  <AppDropdown class="app-language-switch">
+  <!-- 通常: トップバー用のドロップダウン -->
+  <AppDropdown v-if="!props.inline" class="app-language-switch">
     <template #trigger="{ isOpen, toggle }">
       <button
         type="button"
@@ -107,12 +120,48 @@ const currentLabel = computed(() => {
             class="app-language-switch__link"
             @click="close"
           >
+            <IconLoader
+              name="icon-check"
+              :width="14"
+              :height="14"
+              stroke-color="var(--text-main)"
+              aria-hidden="true"
+              v-if="currentLang === locale.lang"
+              class="icon-selected"
+            />
             {{ locale.label }}
           </a>
         </li>
       </ul>
     </template>
   </AppDropdown>
+
+  <!-- インライン: 設定パネル内用のリスト表示 -->
+  <div v-else class="app-language-switch app-language-switch--inline">
+    <ul class="app-language-switch__menu app-language-switch__menu--inline" role="listbox">
+      <li
+        v-for="locale in localeOptions"
+        :key="locale.lang"
+        class="app-language-switch__item"
+      >
+        <a
+          :href="locale.href"
+          class="app-language-switch__link"
+        >
+          <IconLoader
+            name="icon-check"
+            :width="14"
+            :height="14"
+            stroke-color="var(--text-main)"
+            aria-hidden="true"
+            v-if="currentLang === locale.lang"
+            class="icon-selected"
+          />
+          {{ locale.label }}
+        </a>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <style scoped>
@@ -143,23 +192,45 @@ const currentLabel = computed(() => {
 
   .app-language-switch__item {
     list-style: none;
-    font-size: 1.4rem;
-    font-weight: 600;
+    position: relative;
+    font-size: 1.3rem;
+    font-weight: 500;
     color: var(--text-option);
 
-    a {
+    .icon-selected {
+      position: absolute;
+      left: 0.95rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1.2rem;
+      height: 1.2rem;
+      fill: var(--text-lightest);
+    }
+
+    .app-language-switch__link {
       display: block;
       width: 100%;
       height: 100%;
       padding: 0.75rem 1.5rem;
+      padding-left: 3rem;
       text-decoration: none;
       color: var(--text-option);
+
       &:hover {
         background: var(--bg-accent);
         color: var(--text-lightest);
+        font-weight: 600;
       }
     }
   }
+}
+
+.app-language-switch__menu--inline {
+  position: static;
+  margin-top: 0;
+  min-width: 0;
+  border: none;
+  box-shadow: none;
 }
 </style>
 
