@@ -43,18 +43,32 @@ export default defineConfig({
             text: 'Introduction',
             items: [
               { text: 'What is bwsf?', link: '/en/guide/getting-started' },
-              { text: 'Installation', link: '/en/guide/installation' },
+              { text: 'Key Features', link: '/en/guide/features' },
             ]
           },
           {
             text: 'Usage',
             items: [
+              { text: 'Installation', link: '/en/guide/installation' },
               { text: 'Commands', link: '/en/guide/commands' },
+              { text: 'Philosophy', link: '/en/guide/philosophy' },
+              {
+                text: 'Other',
+                collapsed: true,
+                items: [
+                  { text: 'Upgrade', link: '/en/guide/upgrade' },
+                  { text: 'Uninstall', link: '/en/guide/uninstall' },
+                  { text: 'Features in Development', link: '/en/guide/dev-loadmap' },
+                ]
+              },
+              { text: 'FAQ', link: '/en/guide/faq' },
             ]
           },
           {
             text: 'Legal',
             items: [
+              { text: 'License', link: '/en/guide/license' },
+              { text: 'License FAQ', link: '/en/guide/license-faq' },
               { text: 'Cookie Policy', link: '/en/cookie-policy' },
             ]
           }
@@ -90,7 +104,7 @@ export default defineConfig({
           {
             text: 'はじめに',
             items: [
-              { text: 'bwenvとは？', link: '/ja/guide/getting-started' },
+              { text: 'bwsfとは？', link: '/ja/guide/getting-started' },
               { text: '主な機能', link: '/ja/guide/features' },
             ]
           },
@@ -99,6 +113,7 @@ export default defineConfig({
             items: [
               { text: 'インストール', link: '/ja/guide/installation' },
               { text: 'コマンド', link: '/ja/guide/commands' },
+              { text: 'フィロソフィー', link: '/ja/guide/philosophy' },
               {
                 text: 'その他',
                 collapsed: true,
@@ -114,8 +129,8 @@ export default defineConfig({
           {
             text: '法的事項',
             items: [
-              { text: 'ライセンス', link: '/ja/license' },
-              { text: 'ライセンスに関するFAQ', link: '/ja/license-faq' },
+              { text: 'ライセンス', link: '/ja/guide/license' },
+              { text: 'ライセンスに関するFAQ', link: '/ja/guide/license-faq' },
               { text: 'Cookieポリシー', link: '/ja/cookie-policy' },
             ]
           }
