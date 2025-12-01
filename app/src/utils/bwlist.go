@@ -207,7 +207,7 @@ func BwUnlock(masterPassword string) (bool, string) {
 
 	// Try method 1: Use --passwordfile option (most reliable for non-interactive use)
 	// Create a temporary file with the password
-	tmpFile, tmpErr := os.CreateTemp("", "bwenv-password-*")
+	tmpFile, tmpErr := os.CreateTemp("", "bwsf-password-*")
 	if tmpErr == nil {
 		defer os.Remove(tmpFile.Name()) // Clean up temp file
 		tmpFile.WriteString(masterPassword)

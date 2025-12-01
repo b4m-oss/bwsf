@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"bwenv/src/core"
-	"bwenv/src/infra"
-	"bwenv/src/utils"
+	"bwsf/src/core"
+	"bwsf/src/infra"
+	"bwsf/src/utils"
 	"os"
 
 	"github.com/spf13/cobra"

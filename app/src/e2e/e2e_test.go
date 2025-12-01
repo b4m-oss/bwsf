@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"bwenv/src/config"
-	"bwenv/src/core"
-	"bwenv/src/infra"
+	"bwsf/src/config"
+	"bwsf/src/core"
+	"bwsf/src/infra"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -15,7 +15,7 @@ import (
 
 // =============================================================================
 // E2Eテスト
-// bwenvの主要コマンドフロー（setup, list, push, pull）をモックでテスト
+// bwsfの主要コマンドフロー（setup, list, push, pull）をモックでテスト
 // =============================================================================
 
 // TestE2E_FullWorkflow は完全なワークフローをテストします。

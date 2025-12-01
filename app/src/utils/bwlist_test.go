@@ -3,7 +3,7 @@ package utils
 import (
 	"testing"
 
-	"bwenv/src/core"
+	"bwsf/src/core"
 
 	"github.com/stretchr/testify/assert"
 )

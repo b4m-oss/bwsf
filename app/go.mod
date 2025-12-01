@@ -1,4 +1,4 @@
-module bwenv
+module bwsf
 
 go 1.24
 
