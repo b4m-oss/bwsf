@@ -12,7 +12,13 @@
 
 ### 依存関係
 
-**Bitwarden CLI (`bw`)** が必要です。先にインストールしてください：
+`bwsf`の利用とインストールには、以下が必要です。
+
+- **Bitwarden CLI (`bw`)**
+- **Homebrew**
+- Bitwardenのアカウント
+
+### Bitwarden CLIのインストール
 
 ```bash
 # macOS
@@ -27,7 +33,27 @@ npm install -g @bitwarden/cli
 
 その他のオプションについては、[公式 Bitwarden CLI ドキュメント](https://bitwarden.com/help/cli/#download-and-install)を参照してください。
 
+### Homebrewのセットアップ
+
+詳しくは、[Homebrewの公式サイト](https://brew.sh/)をご覧ください。
+
+- [macOS](https://brew.sh/)
+- [Linux](https://docs.brew.sh/Homebrew-on-Linux)
+
+### Bitwardenアカウントのセットアップ
+
+Bitwardenには、2種類のホスティング形式があります
+
+- **[Bitwarden Cloud]()**: Bitwardenが、公式のホスティングしているSaaSサービスです
+- **Bitwardenセルフホスト**: BitwardenはOSSとして公開されており、セルフホストすることも可能です
+
+`bwsf`は、このどちらにも対応しています。
+
+[Bitwardenのアカウントの作り方は、こちらのドキュメント](https://bitwarden.com/help/create-bitwarden-account/)を参考にして下さい。
+
 ## bwsf のインストール
+
+さて、いよいよ`bwsf`のインストールです。
 
 ### macOS
 
@@ -36,10 +62,6 @@ brew tap b4m-oss/tap && brew install bwsf
 ```
 
 ### Linux
-
-::: tip
-Linux では、先に [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux) をインストールする必要があります。
-:::
 
 ```bash
 brew tap b4m-oss/tap && brew install bwsf
@@ -54,7 +76,7 @@ bwsf -v
 
 ## 初期設定
 
-インストール後、セットアップコマンドを実行して Bitwarden 接続を設定します：
+インストール後、セットアップコマンドを実行して Bitwarden 接続を設定します。
 
 ```bash
 bwsf setup
@@ -65,17 +87,7 @@ bwsf setup
 2. Bitwarden のメールアドレス
 3. マスターパスワード
 
-## アンインストール
+----
 
-```bash
-brew uninstall bwsf
-```
-
-## アップグレード
-
-```bash
-brew upgrade bwsf
-```
-
-
+以上で初期設定は終了です。お疲れ様でした！
 
