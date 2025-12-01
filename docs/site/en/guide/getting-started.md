@@ -1,14 +1,14 @@
 # Getting Started
 
-## What is bwenv?
+## What is bwsf?
 
-**bwenv** is a CLI tool that uses [Bitwarden](https://bitwarden.com/) to manage `.env` files securely.
+**bwsf** is a CLI tool that uses [Bitwarden](https://bitwarden.com/) to manage `.env` files securely.
 
-Instead of sharing `.env` files through insecure channels like email or Slack, bwenv lets you store them in your Bitwarden vault and sync them across your team.
+Instead of sharing `.env` files through insecure channels like email or Slack, bwsf lets you store them in your Bitwarden vault and sync them across your team.
 
 ## Prerequisites
 
-Before using bwenv, make sure you have:
+Before using bwsf, make sure you have:
 
 1. **Bitwarden Account** - Either [Bitwarden Cloud](https://bitwarden.com/) or a self-hosted Bitwarden server
 2. **Bitwarden CLI (`bw`)** - The official Bitwarden command-line tool
@@ -23,13 +23,13 @@ Verify the installation:
 bw --version
 ```
 
-## How bwenv Works
+## How bwsf Works
 
-bwenv stores your `.env` files in a special folder called `dotenvs` within your Bitwarden vault. Here's how the structure looks:
+bwsf stores your `.env` files in a special folder called `dotenvs` within your Bitwarden vault. Here's how the structure looks:
 
 ```
 Bitwarden Vault
-└── dotenvs/                    # Reserved folder for bwenv
+└── dotenvs/                    # Reserved folder for bwsf
     ├── my-web-app/             # Project name (directory name)
     │   ├── .env
     │   ├── .env.staging
@@ -39,15 +39,15 @@ Bitwarden Vault
 ```
 
 ::: info
-The folder name `dotenvs` is reserved by bwenv. Don't use it for other purposes in your Bitwarden vault.
+The folder name `dotenvs` is reserved by bwsf. Don't use it for other purposes in your Bitwarden vault.
 :::
 
 ## Initial Setup
 
-After installing bwenv, run the setup command:
+After installing bwsf, run the setup command:
 
 ```bash
-bwenv setup
+bwsf setup
 ```
 
 This will configure:
@@ -56,5 +56,5 @@ This will configure:
 
 ## Next Steps
 
-- [Install bwenv](/en/guide/installation) - Installation instructions for your platform
+- [Install bwsf](/en/guide/installation) - Installation instructions for your platform
 - [Commands](/en/guide/commands) - Learn all available commands

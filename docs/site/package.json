@@ -1,7 +1,7 @@
 {
-  "name": "bwenv-docs",
+  "name": "bwsf-docs",
   "version": "1.0.0",
-  "description": "Documentation site for bwenv CLI",
+  "description": "Documentation site for bwsf CLI",
   "type": "module",
   "scripts": {
     "dev": "vitepress dev",

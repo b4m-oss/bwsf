@@ -1,14 +1,14 @@
 # はじめに
 
-## bwenvとは？
+## bwsfとは？
 
-**bwenv** は、[Bitwarden](https://bitwarden.com/) を使用して `.env` ファイルを安全に管理する CLI ツールです。
+**bwsf** は、[Bitwarden](https://bitwarden.com/) を使用して `.env` ファイルを安全に管理する CLI ツールです。
 
-メールや Slack のような安全でないチャネルで `.env` ファイルを共有する代わりに、bwenv を使えば Bitwarden ボールトに保存してチーム間で同期できます。
+メールや Slack のような安全でないチャネルで `.env` ファイルを共有する代わりに、bwsf を使えば Bitwarden ボールトに保存してチーム間で同期できます。
 
 ## 前提条件
 
-bwenv を使用する前に、以下を準備してください：
+bwsf を使用する前に、以下を準備してください：
 
 1. **Bitwarden アカウント** - [Bitwarden Cloud](https://bitwarden.com/) またはセルフホスト Bitwarden サーバー
 2. **Bitwarden CLI (`bw`)** - 公式の Bitwarden コマンドラインツール
@@ -23,13 +23,13 @@ bwenv を使用する前に、以下を準備してください：
 bw --version
 ```
 
-## bwenv の仕組み
+## bwsf の仕組み
 
-bwenv は `.env` ファイルを Bitwarden ボールト内の `dotenvs` という特別なフォルダに保存します。構造は以下のようになります：
+bwsf は `.env` ファイルを Bitwarden ボールト内の `dotenvs` という特別なフォルダに保存します。構造は以下のようになります：
 
 ```
 Bitwarden Vault
-└── dotenvs/                    # bwenv 用の予約フォルダ
+└── dotenvs/                    # bwsf 用の予約フォルダ
     ├── my-web-app/             # プロジェクト名（ディレクトリ名）
     │   ├── .env
     │   ├── .env.staging
@@ -39,15 +39,15 @@ Bitwarden Vault
 ```
 
 ::: info
-`dotenvs` というフォルダ名は bwenv によって予約されています。Bitwarden ボールト内で他の目的に使用しないでください。
+`dotenvs` というフォルダ名は bwsf によって予約されています。Bitwarden ボールト内で他の目的に使用しないでください。
 :::
 
 ## 初期設定
 
-bwenv をインストールしたら、セットアップコマンドを実行します：
+bwsf をインストールしたら、セットアップコマンドを実行します：
 
 ```bash
-bwenv setup
+bwsf setup
 ```
 
 これにより以下が設定されます：

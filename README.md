@@ -14,13 +14,13 @@ From v0.11.0, `bwenv` is re-named as `bwsf`. This is cause some bwenv commands a
 
 Rename youre setting directory.
 
-```
+```bash
 mv ~/.config/bwenv ~/.config/bwsf
 ```
 
 Uninstall your current version, and re-install latest version.
 
-```
+```bash
 brew uninstall bwenv
 brew install bwsf
 ```

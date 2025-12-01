@@ -1,9 +1,9 @@
 ---
 layout: home
-title: bwenv
+title: bwsf
 
 hero:
-  name: bwenv
+  name: bwsf
   text: Secure .env Management
   tagline: Choose your language / 言語を選択
   actions:

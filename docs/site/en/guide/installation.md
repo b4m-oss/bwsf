@@ -27,12 +27,12 @@ npm install -g @bitwarden/cli
 
 See the [official Bitwarden CLI docs](https://bitwarden.com/help/cli/#download-and-install) for more options.
 
-## Install bwenv
+## Install bwsf
 
 ### macOS
 
 ```bash
-brew tap b4m-oss/tap && brew install bwenv
+brew tap b4m-oss/tap && brew install bwsf
 ```
 
 ### Linux
@@ -42,14 +42,14 @@ Linux requires [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux) to be
 :::
 
 ```bash
-brew tap b4m-oss/tap && brew install bwenv
+brew tap b4m-oss/tap && brew install bwsf
 ```
 
 ## Verify Installation
 
 ```bash
-bwenv -v
-# bwenv version x.x.x
+bwsf -v
+# bwsf version x.x.x
 ```
 
 ## Initial Setup
@@ -57,7 +57,7 @@ bwenv -v
 After installation, run the setup command to configure your Bitwarden connection:
 
 ```bash
-bwenv setup
+bwsf setup
 ```
 
 You'll be prompted to enter:
@@ -68,12 +68,12 @@ You'll be prompted to enter:
 ## Uninstall
 
 ```bash
-brew uninstall bwenv
+brew uninstall bwsf
 ```
 
 ## Upgrading
 
 ```bash
-brew upgrade bwenv
+brew upgrade bwsf
 ```
 
