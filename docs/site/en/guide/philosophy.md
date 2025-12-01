@@ -1,3 +1,8 @@
+---
+title: Philosophy
+description: A summary of bwsf's development and design philosophy. bwsf is an open-source CLI command for managing .env files in bulk. It is developed and maintained by Bicycle for Mind LLC.
+---
+
 # Development and Design Philosophy
 
 If you arrived here looking for the `bwsf` command, this content might not be necessary for you.

@@ -1,3 +1,8 @@
+---
+title: FAQ
+description: A document summarizing frequently asked questions and answers about bwsf. bwsf is an open-source CLI command for managing .env files in bulk. It is developed and maintained by Bicycle for Mind LLC.
+---
+
 # Frequently Asked Questions
 
 ## Q: I don't have a Bitwarden account

@@ -1,3 +1,8 @@
+---
+title: Key Features
+description: Detailed documentation on bwsf's .env file management features. bwsf is an open-source CLI command for managing .env files in bulk. It is developed and maintained by Bicycle for Mind LLC.
+---
+
 # Key Features
 
 `bwsf` is a helper command for securely managing .env files using [Bitwarden](https://bitwarden.com/).

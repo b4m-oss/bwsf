@@ -1,3 +1,8 @@
+---
+title: Features in Development
+description: This page explains bwsf's upcoming development plans and feature roadmap. bwsf is an open-source CLI command for managing .env files in bulk. It is developed and maintained by Bicycle for Mind LLC.
+---
+
 # Features in Development
 
 - Ability to use folder names other than `dotenvs`

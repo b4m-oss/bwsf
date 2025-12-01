@@ -1,3 +1,8 @@
+---
+title: Cookie Policy
+description: This page describes how we use cookies on this website. bwsf is an open-source CLI command for managing .env files in bulk. It is developed and maintained by Bicycle for Mind LLC.
+---
+
 # Cookie Policy
 
 *Last updated: December 2024*

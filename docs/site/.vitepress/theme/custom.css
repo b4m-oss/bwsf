@@ -1,0 +1,77 @@
+/* グローバルで使うカスタム CSS
+ * - ボタン / バッジ / レイアウト用ユーティリティ
+ * - 色は VitePress の CSS 変数を使うので、ダークモードにもなじみます
+ */
+
+/* 例: カスタムボタン */
+.bw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease,
+    border-color 0.15s ease, transform 0.08s ease;
+}
+
+.bw-btn--primary {
+  background: var(--vp-c-brand-1);
+  color: var(--vp-c-bg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.bw-btn--primary:hover {
+  background: var(--vp-c-brand-2);
+  transform: translateY(-1px);
+}
+
+.bw-btn--ghost {
+  background: transparent;
+  color: var(--vp-c-brand-1);
+  border-color: var(--vp-c-brand-1);
+}
+
+.bw-btn--ghost:hover {
+  background: rgba(23, 93, 220, 0.06);
+}
+
+/* 例: セクション間の余白ユーティリティ */
+.bw-section {
+  padding: 3rem 0;
+}
+
+.bw-section--muted {
+  background-color: var(--vp-c-bg-soft);
+}
+
+/* 例: シンプルな 3 カードグリッド */
+.bw-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.bw-card {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg);
+}
+
+.bw-card__title {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.bw-card__description {
+  font-size: 0.95rem;
+  color: var(--vp-c-text-2);
+}
+
+

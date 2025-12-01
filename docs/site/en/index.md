@@ -1,4 +1,7 @@
 ---
+title: Home
+description: Manage .env files securely with Bitwarden CLI
+titleTemplate: bwsf - .env management no more effort
 layout: home
 
 hero:

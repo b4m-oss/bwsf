@@ -1,7 +1,8 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig, type HeadConfig } from 'vitepress'
 
 export default defineConfig({
   title: 'bwsf',
+  titleTemplate: ':title :: bwsf - .env management no more effort',
   description: 'Manage .env files with Bitwarden CLI',
   
   // GitHub Pages base path
@@ -10,11 +11,41 @@ export default defineConfig({
   // Clean URLs (no .html extension)
   cleanUrls: true,
   
-  // Head meta tags
+  // Head meta tags (shared across all locales)
   head: [
+    // Favicon
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/bwsf/logo.svg' }],
+    
+    // Theme
     ['meta', { name: 'theme-color', content: '#175ddc' }],
-    ['meta', { name: 'og:type', content: 'website' }],
-    ['meta', { name: 'og:site_name', content: 'bwsf' }],
+    
+    // OGP (shared)
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:site_name', content: 'bwsf' }],
+    ['meta', { property: 'og:url', content: 'https://b4m-oss.github.io/bwsf/' }],
+    
+    // Twitter Card (shared)
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    
+    // JSON-LD: WebSite schema
+    [
+      'script',
+      { type: 'application/ld+json' },
+      JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'bwsf',
+        url: 'https://b4m-oss.github.io/bwsf/',
+        description: 'Manage .env files with Bitwarden CLI',
+        inLanguage: ['en', 'ja'],
+        publisher: {
+          '@type': 'Organization',
+          name: 'Bicycle for Mind LLC',
+          url: 'https://b4m.co.jp/'
+        }
+      })
+    ],
+    
     // Google Analytics is loaded dynamically based on cookie consent
     // See .vitepress/theme/useGoogleAnalytics.ts
   ],
@@ -25,6 +56,11 @@ export default defineConfig({
       label: 'English',
       lang: 'en',
       link: '/en/',
+      description: 'Manage .env files with Bitwarden CLI',
+      head: [
+        ['meta', { property: 'og:image', content: 'https://b4m-oss.github.io/bwsf/og-image-en.png' }],
+        ['meta', { name: 'twitter:image', content: 'https://b4m-oss.github.io/bwsf/og-image-en.png' }],
+      ],
       themeConfig: {
         nav: [
           { text: 'Guide', link: '/en/guide/getting-started' },
@@ -87,6 +123,11 @@ export default defineConfig({
       label: '日本語',
       lang: 'ja',
       link: '/ja/',
+      description: 'Bitwarden CLIで.envファイルを管理',
+      head: [
+        ['meta', { property: 'og:image', content: 'https://b4m-oss.github.io/bwsf/og-image-ja.png' }],
+        ['meta', { name: 'twitter:image', content: 'https://b4m-oss.github.io/bwsf/og-image-ja.png' }],
+      ],
       themeConfig: {
         nav: [
           { text: 'ガイド', link: '/ja/guide/getting-started' },
@@ -158,6 +199,51 @@ export default defineConfig({
         darkModeSwitchLabel: 'ダークモード',
       }
     }
+  },
+  
+  transformHead({ pageData }): HeadConfig[] {
+    const head: HeadConfig[] = []
+    
+    // Treat guide pages and cookie-policy pages as article-type content
+    const isArticle =
+      pageData.relativePath.startsWith('en/guide/') ||
+      pageData.relativePath.startsWith('ja/guide/') ||
+      pageData.relativePath.endsWith('/cookie-policy.md')
+    
+    if (isArticle && pageData.title && pageData.description) {
+      const baseUrl = 'https://b4m-oss.github.io/bwsf/'
+      const path = pageData.relativePath
+        .replace(/\.md$/, '')
+        .replace(/\/index$/, '/')
+      const url = new URL(path, baseUrl).toString()
+      
+      head.push([
+        'script',
+        { type: 'application/ld+json' },
+        JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': ['Article', 'TechArticle'],
+          headline: `${pageData.title} :: bwsf - .env management no more effort`,
+          description: pageData.description,
+          inLanguage: (pageData as any).lang ?? 'en',
+          author: {
+            '@type': 'Person',
+            name: 'Kohki SHIKATA'
+          },
+          publisher: {
+            '@type': 'Organization',
+            name: 'Bicycle for Mind LLC',
+            url: 'https://b4m.co.jp/'
+          },
+          mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': url
+          }
+        })
+      ])
+    }
+    
+    return head
   },
   
   themeConfig: {

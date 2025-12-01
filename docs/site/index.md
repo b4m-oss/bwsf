@@ -1,6 +1,8 @@
 ---
 layout: home
 title: bwsf
+description: Manage .env files securely with Bitwarden CLI
+titleTemplate: false
 
 hero:
   name: bwsf

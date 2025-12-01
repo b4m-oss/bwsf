@@ -1,3 +1,8 @@
+---
+title: Getting Started
+description: bwsf is a command-line tool for securely managing .env files with Bitwarden. This page explains basic usage. bwsf is an open-source CLI developed and maintained by Bicycle for Mind LLC.
+---
+
 # Getting Started
 
 ## What is bwsf?

@@ -1,3 +1,8 @@
+---
+title: Installation
+description: This page explains how to install bwsf on macOS and Linux. bwsf is an open-source CLI command for managing .env files in bulk. It is developed and maintained by Bicycle for Mind LLC.
+---
+
 # Installation
 
 ## Requirements

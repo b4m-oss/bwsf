@@ -1,3 +1,8 @@
+---
+title: License
+description: Information about bwsf's license (MIT License). bwsf is an open-source CLI command for managing .env files in bulk. It is developed and maintained by Bicycle for Mind LLC.
+---
+
 # About the `bwsf` License
 
 `bwsf` is developed and led by Bicycle for Mind LLC (CHITEKI JITENSHA LLC) and its representative member Kohki Shikata, who hold the copyright.

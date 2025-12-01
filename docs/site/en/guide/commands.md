@@ -1,3 +1,8 @@
+---
+title: Commands
+description: This page explains all bwsf commands and usage examples. bwsf is an open-source CLI command for managing .env files in bulk. It is developed and maintained by Bicycle for Mind LLC.
+---
+
 # Commands
 
 ## Overview
