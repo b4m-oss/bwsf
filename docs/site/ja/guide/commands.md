@@ -4,17 +4,17 @@
 
 | コマンド | 説明 |
 |---|---|
-| `bwenv setup` | Bitwarden 接続の設定 |
-| `bwenv push` | .env ファイルを Bitwarden にプッシュ |
-| `bwenv pull` | .env ファイルを Bitwarden からプル |
-| `bwenv list` | 保存されている全プロジェクトを一覧表示 |
+| `bwsf setup` | Bitwarden 接続の設定 |
+| `bwsf push` | .env ファイルを Bitwarden にプッシュ |
+| `bwsf pull` | .env ファイルを Bitwarden からプル |
+| `bwsf list` | 保存されている全プロジェクトを一覧表示 |
 
-## bwenv setup
+## bwsf setup
 
 Bitwarden 接続の設定を行います。
 
 ```bash
-bwenv setup
+bwsf setup
 ```
 
 この対話式コマンドでは以下の入力を求められます：
@@ -22,13 +22,13 @@ bwenv setup
 - **メールアドレス**: Bitwarden アカウントのメールアドレス
 - **マスターパスワード**: Bitwarden のマスターパスワード
 
-## bwenv push
+## bwsf push
 
 現在のディレクトリから `.env` ファイルを Bitwarden ボールトにプッシュします。
 
 ```bash
 cd /path/to/your_project
-bwenv push
+bwsf push
 ```
 
 ### オプション
@@ -49,19 +49,19 @@ bwenv push
 ```bash
 # 現在のディレクトリからプッシュ
 cd my-web-app
-bwenv push
+bwsf push
 
 # 特定のディレクトリからプッシュ
-bwenv push --from ./config
+bwsf push --from ./config
 ```
 
-## bwenv pull
+## bwsf pull
 
 Bitwarden ボールトから `.env` ファイルを現在のディレクトリにプルします。
 
 ```bash
 cd /path/to/your_project
-bwenv pull
+bwsf pull
 ```
 
 ### オプション
@@ -82,18 +82,18 @@ bwenv pull
 ```bash
 # 現在のディレクトリにプル
 cd my-web-app
-bwenv pull
+bwsf pull
 
 # 特定のディレクトリにプル
-bwenv pull --output ./config
+bwsf pull --output ./config
 ```
 
-## bwenv list
+## bwsf list
 
 Bitwarden ボールトに保存されている全プロジェクトを一覧表示します。
 
 ```bash
-bwenv list
+bwsf list
 ```
 
 ### 出力例
@@ -114,7 +114,7 @@ Projects in Bitwarden:
 echo "API_KEY=secret123" > .env
 
 # Bitwarden にプッシュ
-bwenv push
+bwsf push
 ```
 
 ### 新しいマシンでの同期
@@ -125,7 +125,7 @@ git clone https://github.com/yourorg/my-web-app.git
 cd my-web-app
 
 # Bitwarden から .env をプル
-bwenv pull
+bwsf pull
 ```
 
 ### マルチ環境のセットアップ
@@ -137,10 +137,10 @@ echo "API_URL=https://staging.example.com" > .env.staging
 echo "API_URL=https://api.example.com" > .env.production
 
 # すべてのファイルをプッシュ
-bwenv push
+bwsf push
 
 # 別のマシンで全ファイルをプル
-bwenv pull
+bwsf pull
 ```
 
 

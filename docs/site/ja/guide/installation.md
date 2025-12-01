@@ -27,12 +27,12 @@ npm install -g @bitwarden/cli
 
 その他のオプションについては、[公式 Bitwarden CLI ドキュメント](https://bitwarden.com/help/cli/#download-and-install)を参照してください。
 
-## bwenv のインストール
+## bwsf のインストール
 
 ### macOS
 
 ```bash
-brew tap b4m-oss/tap && brew install bwenv
+brew tap b4m-oss/tap && brew install bwsf
 ```
 
 ### Linux
@@ -42,14 +42,14 @@ Linux では、先に [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux
 :::
 
 ```bash
-brew tap b4m-oss/tap && brew install bwenv
+brew tap b4m-oss/tap && brew install bwsf
 ```
 
 ## インストールの確認
 
 ```bash
-bwenv -v
-# bwenv version x.x.x
+bwsf -v
+# bwsf version x.x.x
 ```
 
 ## 初期設定
@@ -57,7 +57,7 @@ bwenv -v
 インストール後、セットアップコマンドを実行して Bitwarden 接続を設定します：
 
 ```bash
-bwenv setup
+bwsf setup
 ```
 
 以下の入力を求められます：
@@ -68,13 +68,13 @@ bwenv setup
 ## アンインストール
 
 ```bash
-brew uninstall bwenv
+brew uninstall bwsf
 ```
 
 ## アップグレード
 
 ```bash
-brew upgrade bwenv
+brew upgrade bwsf
 ```
 
 

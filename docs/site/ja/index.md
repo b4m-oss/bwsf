@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: bwenv
+  name: bwsf
   text: 安全な .env 管理
   tagline: Bitwarden CLI で .env ファイルを管理
   actions:
@@ -11,7 +11,7 @@ hero:
       link: /ja/guide/getting-started
     - theme: alt
       text: GitHub で見る
-      link: https://github.com/b4m-oss/bwenv
+      link: https://github.com/b4m-oss/bwsf
 
 features:
   - icon: 🔐
@@ -32,22 +32,22 @@ features:
 
 ```bash
 # Homebrew でインストール
-brew tap b4m-oss/tap && brew install bwenv
+brew tap b4m-oss/tap && brew install bwsf
 
 # 初期設定
-bwenv setup
+bwsf setup
 
 # Bitwarden から .env をプル
 cd /path/to/your_project
-bwenv pull
+bwsf pull
 
 # Bitwarden に .env をプッシュ
-bwenv push
+bwsf push
 ```
 
 ## 仕組み
 
-bwenv は公式の Bitwarden CLI（`bw`）を使用して、`.env` ファイルを安全に保存・取得します。環境変数は Bitwarden ボールト内の専用 `dotenvs` フォルダに**ノートアイテム**として保存されます。
+bwsf は公式の Bitwarden CLI（`bw`）を使用して、`.env` ファイルを安全に保存・取得します。環境変数は Bitwarden ボールト内の専用 `dotenvs` フォルダに**ノートアイテム**として保存されます。
 
 各プロジェクトの `.env` ファイルはディレクトリ名で識別されるため、複数のプロジェクトを簡単に整理・管理できます。
 

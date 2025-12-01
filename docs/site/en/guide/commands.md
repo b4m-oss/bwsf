@@ -4,17 +4,17 @@
 
 | Command | Description |
 |---|---|
-| `bwenv setup` | Configure Bitwarden connection |
-| `bwenv push` | Push .env files to Bitwarden |
-| `bwenv pull` | Pull .env files from Bitwarden |
-| `bwenv list` | List all stored projects |
+| `bwsf setup` | Configure Bitwarden connection |
+| `bwsf push` | Push .env files to Bitwarden |
+| `bwsf pull` | Pull .env files from Bitwarden |
+| `bwsf list` | List all stored projects |
 
-## bwenv setup
+## bwsf setup
 
 Configure your Bitwarden connection settings.
 
 ```bash
-bwenv setup
+bwsf setup
 ```
 
 This interactive command will prompt you for:
@@ -22,13 +22,13 @@ This interactive command will prompt you for:
 - **Email**: Your Bitwarden account email
 - **Master Password**: Your Bitwarden master password
 
-## bwenv push
+## bwsf push
 
 Push `.env` files from the current directory to your Bitwarden vault.
 
 ```bash
 cd /path/to/your_project
-bwenv push
+bwsf push
 ```
 
 ### Options
@@ -49,19 +49,19 @@ bwenv push
 ```bash
 # Push from current directory
 cd my-web-app
-bwenv push
+bwsf push
 
 # Push from a specific directory
-bwenv push --from ./config
+bwsf push --from ./config
 ```
 
-## bwenv pull
+## bwsf pull
 
 Pull `.env` files from your Bitwarden vault to the current directory.
 
 ```bash
 cd /path/to/your_project
-bwenv pull
+bwsf pull
 ```
 
 ### Options
@@ -82,18 +82,18 @@ bwenv pull
 ```bash
 # Pull to current directory
 cd my-web-app
-bwenv pull
+bwsf pull
 
 # Pull to a specific directory
-bwenv pull --output ./config
+bwsf pull --output ./config
 ```
 
-## bwenv list
+## bwsf list
 
 List all projects stored in your Bitwarden vault.
 
 ```bash
-bwenv list
+bwsf list
 ```
 
 ### Output
@@ -114,7 +114,7 @@ Projects in Bitwarden:
 echo "API_KEY=secret123" > .env
 
 # Push to Bitwarden
-bwenv push
+bwsf push
 ```
 
 ### Syncing on a new machine
@@ -125,7 +125,7 @@ git clone https://github.com/yourorg/my-web-app.git
 cd my-web-app
 
 # Pull .env from Bitwarden
-bwenv pull
+bwsf pull
 ```
 
 ### Multi-environment setup
@@ -137,9 +137,9 @@ echo "API_URL=https://staging.example.com" > .env.staging
 echo "API_URL=https://api.example.com" > .env.production
 
 # Push all files
-bwenv push
+bwsf push
 
 # On another machine, pull all files
-bwenv pull
+bwsf pull
 ```
 
