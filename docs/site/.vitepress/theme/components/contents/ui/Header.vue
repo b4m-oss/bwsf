@@ -78,19 +78,13 @@ import Config from './Config.vue';
     gap: 1.75rem;
   }
 
-  .app-dropdown {
-    margin-left: 2em;
-    button {
-      background-color: #a4a4a4;
-    }
-  }
 
   .header-nav-list {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 1.75rem;
+    gap: 4.25rem;
 
     .header-nav-link {
       font-size: 1.3rem;

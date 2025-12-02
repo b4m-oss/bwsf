@@ -5,14 +5,14 @@
 
 main {
   h1, heading-1 {
-    font-size: 3.8rem;
+    font-size: 3.2rem;
     font-weight: bold;
     color: var(--text-bold);
     line-height: 1.15;
     margin-bottom: 2rem;
   }
   h2, heading-2 {
-    font-size: 2.6rem;
+    font-size: 2.4rem;
     font-weight: bold;
     color: var(--text-option);
     line-height: 1.15;
@@ -20,23 +20,23 @@ main {
     margin-bottom: 1.5rem;
   }
   h3, heading-3 {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 700;
     line-height: 1.15;
     margin-top: 4rem;
     margin-bottom: 1.5rem;
   }
   h4, heading-4 {
-    font-size: 2.4rem;
+    font-size: 1.7rem;
     line-height: 1.15;
     margin-bottom: 1.4rem;
   }
   h5, heading-5 {
-    font-size: 2rem;
+    font-size: 1.65rem;
     line-height: 1.15;
   }
   h6, heading-6 {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     line-height: 1.15;
     margin-bottom: 1.4rem;
   }
@@ -49,12 +49,17 @@ main {
     margin-bottom: 1.5rem;
   } */
   
-  p {
-    margin-bottom: 2rem;
+
+  ul,ol {
+    background-color: var(--bg-accent);
+    padding: 1em;
+    border-radius: 0.5em;
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
-  
-  ul {
-    margin-bottom: 1rem;
+  p, ul, ol, dl, table, blockquote, pre {
+    margin-bottom: 2rem;
   }
   
   [class^="language-"] {
@@ -62,5 +67,47 @@ main {
     pre {
       padding: 2rem;
     }
+  }
+}
+
+ul,ol,dl {
+  margin-left: 1em;
+}
+
+
+ul,ol {
+  li {
+    margin-left: 1em;
+    margin-bottom: 0.7em;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+ul li {
+  list-style-type: disc;
+}
+
+ol li {
+  list-style-type: decimal;
+}
+
+dl dt {
+  font-weight: bold;
+}
+
+dl dd {
+  margin-left: 1em;
+}
+
+nav {
+  ul,ol,li {
+    margin-left: 0;
+  }
+  li {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
   }
 }

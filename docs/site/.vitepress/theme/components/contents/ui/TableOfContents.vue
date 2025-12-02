@@ -255,14 +255,14 @@ const handleSmoothScroll = (e: Event, header: any) => {
 }
 
 .toc-item {
-  margin-bottom: 0.6rem;
+  margin-bottom: 1rem;
 }
 
 .toc-link {
   display: block;
   color: var(--text-main);
   text-decoration: none;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   line-height: 1.4;
   transition: color 0.2s ease;
   word-wrap: break-word;
@@ -275,17 +275,17 @@ const handleSmoothScroll = (e: Event, header: any) => {
 
 .toc-level-2 .toc-link {
   font-weight: 600;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
 }
 
 .toc-level-3 .toc-link {
   font-weight: 500;
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 .toc-level-4 .toc-link {
   font-weight: 400;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 /* スクロールバーのスタイル */

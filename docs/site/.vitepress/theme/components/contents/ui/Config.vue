@@ -10,6 +10,7 @@ import AppLanguageSwitch from '../../common/ui/AppLanguageSwitch.vue';
     <template #trigger="{ isOpen, toggle }">
       <button
         type="button"
+        class="config-button"
         :aria-expanded="isOpen"
         aria-haspopup="listbox"
         @click="toggle"
@@ -36,6 +37,14 @@ import AppLanguageSwitch from '../../common/ui/AppLanguageSwitch.vue';
 <style scoped>
 .config {
   position: relative;
+  margin-left: 2em;
+}
+
+.config-button {
+  background-color: rgba(164, 164, 164, 0.15) !important;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  transition: background-color 0.2s;
 }
 
 .config__dropdown {

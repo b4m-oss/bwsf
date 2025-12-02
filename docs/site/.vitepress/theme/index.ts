@@ -2,6 +2,10 @@ import type { Theme } from 'vitepress'
 import CookieConsent from './components/common/CookieConsent.vue'
 import CookieSettings from './components/common/CookieSettings.vue'
 import IconLoader from './components/common/ui/IconLoader.vue'
+import Accordion from './components/common/ui/Accordion.vue'
+import AccordionQA from './components/common/ui/AccordionQA.vue'
+import AccordionList from './components/common/ui/AccordionList.vue'
+import ToggleButton from './components/common/ui/ToggleButton.vue'
 import { useLanguageRedirect } from './useLanguageRedirect'
 import { useGoogleAnalytics } from './useGoogleAnalytics'
 import 'reset-css'
@@ -44,6 +48,10 @@ export default {
     app.component('HeroFeatureCard', HeroFeatureCard)
     app.component('CookieConsent', CookieConsent)
     app.component('IconLoader', IconLoader)
+    app.component('Accordion', Accordion)
+    app.component('AccordionQA', AccordionQA)
+    app.component('AccordionList', AccordionList)
+    app.component('ToggleButton', ToggleButton)
   },
   setup() {
     useLanguageRedirect()
