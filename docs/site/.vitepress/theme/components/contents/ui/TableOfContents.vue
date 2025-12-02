@@ -226,7 +226,7 @@ const handleSmoothScroll = (e: Event, header: any) => {
 <style scoped>
 .table-of-contents {
   position: sticky;
-  top: 2rem;
+  top: 8rem;
   width: 100%;
   max-height: calc(100vh - 4rem);
   overflow-y: auto;

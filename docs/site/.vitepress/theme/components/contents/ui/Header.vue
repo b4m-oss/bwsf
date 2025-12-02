@@ -34,6 +34,11 @@ import Config from './Config.vue';
 
 <style scoped>
 #global-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
   display: grid;
   grid-template-columns: 30% 70%;
   grid-template-rows: 1fr;

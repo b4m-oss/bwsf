@@ -3,6 +3,29 @@
   --mobile-fz: 14.5;
 }
 
+a[target="_blank"] {
+  position: relative;
+  padding-right: 1.2em; /* アイコン分の余白 */
+}
+
+/* 擬似要素でアイコンを表示 */
+a[target="_blank"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 0.9em;
+  height: 0.9em;
+  transform: translateY(-50%);
+  
+  /* 色はここで指定（リンクと同じ色にしたいなら currentColor） */
+  background-color: currentColor;
+
+  /* SVG をマスクとして使う */
+  -webkit-mask: url("/public/icons/icon-external.svg") no-repeat center / contain;
+  mask: url("/public/icons/icon-external.svg") no-repeat center / contain;
+}
+
 main {
   h1, heading-1 {
     font-size: 3.2rem;

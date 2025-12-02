@@ -24,7 +24,7 @@ const items = computed(() => {
 <style scoped>
 .sidebar-menu {
   position: sticky;
-  top: 3rem;
+  top: 8rem;
 }
 
 @media (max-width: 860px) {

@@ -269,5 +269,11 @@ export default defineConfig({
     search: {
       provider: 'local'
     }
+  },
+
+  vite: {
+    server: {
+      allowedHosts: ['659d670f664b.ngrok-free.app'],
+    }
   }
 })
