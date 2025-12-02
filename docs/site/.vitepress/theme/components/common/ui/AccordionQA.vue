@@ -102,7 +102,7 @@ const toggle = () => {
 
 <style scoped>
 .accordion-qa {
-  border: 1px solid var(--storoke-light, var(--stroke-light, rgba(148, 163, 184, 0.4)));
+  border: 1px solid var(--stroke-light);
   border-radius: 0.5rem;
   margin-bottom: 1.5rem;
   background: var(--bg-main, transparent);
@@ -113,6 +113,7 @@ const toggle = () => {
   align-items: flex-start;
   gap: 1rem;
   width: 100%;
+  align-items: center;
 }
 
 .accordion-qa__icon-wrapper {
@@ -179,6 +180,8 @@ const toggle = () => {
   line-height: 1.6;
   color: var(--text-main);
   overflow: hidden;
+  padding-top: 1.5rem;
+  padding-bottom: 2.5rem;
 }
 
 .accordion-qa__content-text {

@@ -1,16 +1,43 @@
 <script setup lang="ts">
+import IconLoader from '../common/ui/IconLoader.vue'
+
 const props = defineProps<{
   icon?: string
   title: string
   description: string
+  width?: number | string
+  height?: number | string
+  name?: string
+  fill?: string
+  strokeColor?: string
+  strokeWidth?: number | string
+  flip?: string | boolean
+  rotate?: number | string
+  posX?: number
+  posY?: number
 }>()
 </script>
 
 <template>
   <section class="feature-item">
     <div class="feature-item__icon">
-      <!-- {{ icon }} -->
-        <p>🔐</p>
+      <IconLoader
+        :width="props.width"
+        :height="props.height"
+        :name="props.name || props.icon"
+        :fill="props.fill"
+        :stroke-color="props.strokeColor"
+        :stroke-width="props.strokeWidth"
+        :flip="props.flip"
+        :rotate="props.rotate"
+        :style="props.posX !== undefined || props.posY !== undefined
+          ? {
+              position: 'absolute',
+              left: `${props.posX ?? 0}px`,
+              top: `${props.posY ?? 0}px`,
+            }
+          : {}"
+      />
     </div>
     <h2 class="feature-item__title" v-html="title"></h2>
     <div class="feature-item__description">{{ description }}</div>
@@ -46,6 +73,7 @@ const props = defineProps<{
   grid-column: 1 / 2;
   grid-row: 1 / 2;
   text-align: center;
+  position: relative;
 }
 
 .feature-item__title {

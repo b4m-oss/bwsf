@@ -3,7 +3,7 @@ pre.vp-code  {
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
-  background-color: #e8e4dd; /* うすいグレーなど。Shiki の色を邪魔しない程度に */
+  background-color: #e3d8c5; /* うすいグレーなど。Shiki の色を邪魔しない程度に */
 }
 
 html.dark pre.vp-code {

@@ -35,10 +35,48 @@ import { withBase } from 'vitepress'
 </template>
 
 <template #features>
-  <HeroFeatureCard title="たった4文字の<br>コマンドライン" description="左手の指を4回動かすだけで打てる基本コマンド。オプションコマンドも、わかりやすくシンプルです。" />
-  <HeroFeatureCard title="複数の開発環境に対応<br>独自名も可" description="開発（.local）、ステージング（.staging）、本番（.production）など、開発に利用されている複数の環境をまとめて管理できます。" />
-  <HeroFeatureCard title="組織・メンバーで<br>活用しやすい" description="Bitwardenは、組織での利用も可能です。開発メンバーだけをdotenvsフォルダーに招待し、必要な権限を与えることができます。" />
-  <HeroFeatureCard title="機密情報は外に出さない<br>自分たちで管理する" description="Bitwardenは、オープンソースです。オンプレミスで運用することもできます。" />
+  <HeroFeatureCard
+    title="たった4文字の<br>コマンドライン"
+    description="左手の指を4回動かすだけで打てる基本コマンド。オプションコマンドも、わかりやすくシンプルです。"
+    name="icon-cli"
+    :width="82"
+    :height="82"
+    :posX="-18"
+    :posY="-24"
+    strokeWidth="8"
+    strokeColor="var(--text-main)"
+    fill="transparent"
+  />
+  <HeroFeatureCard
+    title="複数の開発環境に対応<br>独自名も可"
+    description="開発（.local）、ステージング（.staging）、本番（.production）など、開発に利用されている複数の環境をまとめて管理できます。"
+    name="icon-files"
+    :width="78"
+    :height="78"
+    :posX="-16"
+    :posY="-22"
+    fill="var(--text-main)"
+  />
+  <HeroFeatureCard
+    title="組織・メンバーで<br>活用しやすい"
+    description="Bitwardenは、組織での利用も可能です。開発メンバーだけをdotenvsフォルダーに招待し、必要な権限を与えることができます。"
+    name="icon-people"
+    :width="82"
+    :height="82"
+    :posX="-18"
+    :posY="-24"
+    fill="var(--text-main)"
+  />
+  <HeroFeatureCard
+    title="機密情報は外に出さない<br>自分たちで管理する"
+    description="Bitwardenは、オープンソースです。オンプレミスで運用することもできます。"
+    name="icon-lock"
+    :width="82"
+    :height="82"
+    :posX="-18"
+    :posY="-24"
+    fill="var(--text-main)"
+  />
 </template>
 
 <style scoped>

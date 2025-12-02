@@ -63,6 +63,13 @@ main {
     line-height: 1.15;
     margin-bottom: 1.4rem;
   }
+
+  h1 + h2,
+  .heading-1 + h2,
+  h1 + .heading-2,
+  .heading-1 + .heading-2 {
+    margin-top: 2.5rem;
+  }
   /* .heading-1,
   .heading-2,
   .heading-3,
@@ -90,6 +97,10 @@ main {
   }
   p, ul, ol, dl, table, blockquote, pre {
     margin-bottom: 2rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
   
   [class^="language-"] {
