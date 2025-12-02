@@ -156,8 +156,6 @@ function toggle() {
   padding: 0.25rem;
   min-width: 7rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--vp-c-border);
-  background: var(--vp-c-bg-soft);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   z-index: 20;
 }
@@ -170,14 +168,12 @@ function toggle() {
   display: block;
   padding: 0.25rem 0.5rem;
   font-size: 0.8rem;
-  color: var(--vp-c-text-2);
   text-decoration: none;
   border-radius: 0.35rem;
 }
 
 .app-language-switch__link:hover {
-  background: var(--vp-c-bg-soft-up);
-  color: var(--vp-c-text-1);
+  background: var(--bg-option);
 }
 </style>
 

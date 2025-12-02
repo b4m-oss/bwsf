@@ -72,7 +72,7 @@ const messages = {
   en: {
     title: 'Switch appearance (light / dark / follow system)',
     auto: {
-      label: 'Follow system',
+      label: 'device conf',
     },
     light: {
       label: 'Light',
@@ -332,7 +332,7 @@ function onSelect(mode: Appearance, close: () => void) {
 
     &:hover {
       background: var(--bg-accent);
-      color: var(--text-lightest);
+      /* color: var(--text-lightest); */
     }
 
     .label {

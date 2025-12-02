@@ -39,7 +39,7 @@ const messages = [
           <SearchBox :placeholder="localeIndex === 'ja' ? 'ドキュメントを検索' : 'Search docs'" :search-options="{ fuzzy: 0.2, prefix: true, boost: { title: 4, text: 2, titles: 1 } }" />
         </li>
         <li class="header-nav-link">
-          <a :href="withBase('/ja/guide/getting-started')">Getting staretd</a>
+          <a :href="withBase('/ja/guide/getting-started')">Getting stareted</a>
         </li>
         <li class="header-nav-link">
           <a :href="withBase('/ja/guide/commands')">コマンド一覧</a>
@@ -112,7 +112,7 @@ const messages = [
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 4.25rem;
+    gap: 2.75rem;
 
     .header-nav-link {
       font-size: 1.3rem;
@@ -125,6 +125,7 @@ const messages = [
       display: flex;
       align-items: center;
       min-width: 16rem;
+      margin-right: 2rem;
     }
   }
 }

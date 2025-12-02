@@ -103,6 +103,19 @@ import { withBase } from 'vitepress'
     p {
       font-weight: 800;
       margin-bottom: 1.2em;
+      &:before {
+        content: "#";
+        left: 0;
+        margin-right: .5em;
+      }
+      &:after {
+        content: "\\";
+        right: 0;
+        margin-left: .5em;
+      }
+      &:last-child:after {
+        content: "";
+      }
     }
     
     margin-bottom: 3rem;

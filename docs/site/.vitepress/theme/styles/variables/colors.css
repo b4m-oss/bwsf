@@ -4,6 +4,7 @@
   --bg-accent: #c2c2c2;
   --bg-accent-dark: #959595;
   --bg-accent-light: #efefef;
+  --bg-option: #c8e6e6;
   --bg-super-gradient: linear-gradient(
     135deg,
     rgb(22, 161, 192) 0%,
@@ -28,7 +29,8 @@
   --bg-main: #051d2a;
   --bg-highlight: #092533;
   --bg-accent: #3a4750;
-  --bg-accent-light: #1f292f;
+  --bg-accent-light: #304451;
+  --bg-option: #085051;
   --bg-super-gradient: linear-gradient(
     135deg,
     rgb(39, 215, 255) 0%,

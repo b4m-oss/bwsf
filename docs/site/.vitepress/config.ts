@@ -162,8 +162,8 @@ export default defineConfig({
             text: '使い方',
             items: [
               { text: 'インストール', link: '/ja/guide/installation' },
-              { text: 'コマンド', link: '/ja/guide/commands' },
-              { text: 'フィロソフィー', link: '/ja/guide/philosophy' },
+              { text: 'コマンド一覧', link: '/ja/guide/commands' },
+              { text: 'よくある質問', link: '/ja/guide/faq' },
               {
                 text: 'その他',
                 collapsed: true,
@@ -173,7 +173,12 @@ export default defineConfig({
                   { text: '開発予定中の機能', link: '/ja/guide/dev-loadmap' },
                 ]
               },
-              { text: 'よくある質問', link: '/ja/guide/faq' },
+            ]
+          },
+          {
+            text: '読み物',
+            items: [
+              { text: 'フィロソフィー', link: '/ja/guide/philosophy' },
             ]
           },
           {

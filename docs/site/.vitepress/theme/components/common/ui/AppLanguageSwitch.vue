@@ -152,7 +152,8 @@ const currentLabel = computed(() => {
             name="icon-check"
             :width="14"
             :height="14"
-            stroke-color="var(--text-main)"
+            fill="transparent"
+            strokeColor="green"
             aria-hidden="true"
             v-if="currentLang === locale.lang"
             class="icon-selected"
@@ -208,22 +209,20 @@ const currentLabel = computed(() => {
       transform: translateY(-50%);
       width: 1.2rem;
       height: 1.2rem;
-      fill: var(--text-lightest);
+      /* fill: var(--text-lightest); */
     }
 
     .app-language-switch__link {
       display: block;
       width: 100%;
       height: 100%;
-      padding: 0.75rem 1.5rem;
+      padding: 1em 2em;
       padding-left: 3rem;
       text-decoration: none;
-      color: var(--text-option);
+      /* color: var(--text-option); */
 
       &:hover {
         background: var(--bg-accent);
-        color: var(--text-lightest);
-        font-weight: 600;
       }
     }
   }
