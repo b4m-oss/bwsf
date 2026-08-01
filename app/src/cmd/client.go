@@ -1,0 +1,45 @@
+package cmd
+
+import (
+	"os"
+
+	"bwsf/src/config"
+	"bwsf/src/core"
+	"bwsf/src/infra"
+	"bwsf/src/utils"
+)
+
+// loadConfigOrEmpty loads ~/.config/bwsf/config.json, or returns an empty config when missing.
+func loadConfigOrEmpty() *config.Config {
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		utils.Errorln("[ERROR] Failed to load config:", err)
+		os.Exit(1)
+	}
+	if cfg == nil {
+		return &config.Config{}
+	}
+	return cfg
+}
+
+// newBwClientFromConfig builds the BwClient for cfg and exits on factory errors.
+func newBwClientFromConfig(cfg *config.Config) core.BwClient {
+	bw, err := infra.NewBwClientFromConfig(cfg)
+	if err != nil {
+		utils.Errorln("[ERROR]", err)
+		os.Exit(1)
+	}
+	return bw
+}
+
+// requireBwCLIIfNeeded exits when the bw CLI is required but not installed.
+func requireBwCLIIfNeeded(cfg *config.Config) {
+	if cfg.GetBackend() != config.BackendBW {
+		return
+	}
+	installed, _ := utils.CheckBwCommand()
+	if !installed {
+		utils.Errorln("[ERROR] ❌ bw command is not installed...")
+		os.Exit(1)
+	}
+}

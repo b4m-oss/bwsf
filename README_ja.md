@@ -46,6 +46,7 @@ bwsfコマンドは、Bitwardenで管理されているdotenvファイルをサ�
 | bwsf push | .envファイルをBitwardenホストにプッシュ |
 | bwsf pull | Bitwardenホストから.envファイルをプル |
 | bwsf list | Bitwardenホストに保存されている.envファイルの一覧を表示 |
+| bwsf backend | Bitwardenバックエンド（`bw` CLI / `api`）の表示・設定 |
 
 ## 動機
 
@@ -115,6 +116,16 @@ bwsf list
 
 Bitwardenホストから.envデータの一覧を取得します。
 プロジェクト名のリストが標準出力に表示されます。
+
+### Bitwardenバックエンドの表示・設定
+
+```shell
+bwsf backend
+bwsf backend --set bw
+bwsf backend --set api
+```
+
+デフォルトは `bw`（Bitwarden CLI）です。`api` バックエンドは実験的で、まだ完全には実装されていません。
 
 ## アンインストール
 

@@ -44,6 +44,7 @@ Simple usage below:
 | bwsf push | .env files push to your Bitwarden host |
 | bwsf pull | .env files pull from your Bitwarden host |
 | bwsf list | Show list stored .env files at your Bitwarden host |
+| bwsf backend | Show or set Bitwarden backend (`bw` CLI or `api`) |
 
 ## Motivation
 
@@ -116,6 +117,16 @@ bwsf list
 
 List up your .env datas from Bitwarden host.
 They will showed up project names list on stdout.
+
+### Show or set Bitwarden backend
+
+```shell
+bwsf backend
+bwsf backend --set bw
+bwsf backend --set api
+```
+
+Default backend is `bw` (Bitwarden CLI). The `api` backend is experimental and not fully implemented yet.
 
 ## Uninstall
 

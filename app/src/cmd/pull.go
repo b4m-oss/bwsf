@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bwsf/src/config"
 	"bwsf/src/core"
 	"bwsf/src/infra"
 	"bwsf/src/utils"
@@ -25,12 +24,8 @@ func init() {
 }
 
 func runPull(cmd *cobra.Command, args []string) {
-	// Check if bw command is installed
-	installed, _ := utils.CheckBwCommand()
-	if !installed {
-		utils.Errorln("[ERROR] ❌ bw command is not installed...")
-		os.Exit(1)
-	}
+	cfg := loadConfigOrEmpty()
+	requireBwCLIIfNeeded(cfg)
 
 	// Get --output flag value
 	outputDir, err := cmd.Flags().GetString("output")
@@ -47,18 +42,8 @@ func runPull(cmd *cobra.Command, args []string) {
 	}
 	projectName := filepath.Base(wd)
 
-	// Load config
-	cfg, err := config.LoadConfig()
-	if err != nil {
-		utils.Errorln("[ERROR] Failed to load config:", err)
-		os.Exit(1)
-	}
-	if cfg == nil {
-		cfg = &config.Config{}
-	}
-
 	// Create dependencies
-	bw := infra.NewBwClient()
+	bw := newBwClientFromConfig(cfg)
 	fs := infra.NewFileSystem()
 	logger := infra.NewLogger()
 

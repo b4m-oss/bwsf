@@ -11,12 +11,31 @@ type Config struct {
 	HostType      string `json:"host_type"`      // "cloud" or "selfhosted"
 	SelfhostedURL string `json:"selfhosted_url"` // URL for self-hosted instance
 	Email         string `json:"email"`          // Email address
+	Backend       string `json:"backend,omitempty"` // "bw" (CLI) or "api"; default "bw" when unset
 }
 
 const (
 	configDir  = ".config/bwsf"
 	configFile = "config.json"
+
+	// BackendBW uses the Bitwarden CLI (`bw`) adapter.
+	BackendBW = "bw"
+	// BackendAPI uses the Bitwarden API adapter (not fully implemented yet).
+	BackendAPI = "api"
 )
+
+// GetBackend returns the configured backend, defaulting to "bw" when unset (backward compatible).
+func (c *Config) GetBackend() string {
+	if c == nil || c.Backend == "" {
+		return BackendBW
+	}
+	return c.Backend
+}
+
+// IsValidBackend reports whether backend is a supported value ("bw" or "api").
+func IsValidBackend(backend string) bool {
+	return backend == BackendBW || backend == BackendAPI
+}
 
 // GetConfigPath returns the full path to the config file
 func GetConfigPath() (string, error) {
