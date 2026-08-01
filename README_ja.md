@@ -1,5 +1,8 @@
 # bwsf
 
+[![Test](https://github.com/b4m-oss/bwsf/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/b4m-oss/bwsf/actions/workflows/test.yml)
+[![Release](https://img.shields.io/github/v/release/b4m-oss/bwsf)](https://github.com/b4m-oss/bwsf/releases/latest)
+
 bwsf（Bitwarden Secured Files）は、[Bitwarden](https://bitwarden.com/)を使用して.envファイルを管理するCLIツールです。
 
 [English version is here.](./README.md)
