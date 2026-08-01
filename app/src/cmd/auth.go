@@ -59,6 +59,19 @@ func runAuth(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
+	configPath, err := config.GetConfigPath()
+	if err != nil {
+		utils.Errorln("[ERROR]", err)
+		os.Exit(1)
+	}
+	identityBase, err := infra.ResolveIdentityBase(cfg.HostType, cfg.SelfhostedURL)
+	if err != nil {
+		utils.Errorln("[ERROR]", err)
+		os.Exit(1)
+	}
+	utils.Infoln("[INFO] Using config: " + configPath)
+	utils.Infoln("[INFO] Identity URL: " + identityBase)
+
 	creds, err := promptAPICredentials(store)
 	if err != nil {
 		utils.Errorln("[ERROR]", err)
