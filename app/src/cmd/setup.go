@@ -1,13 +1,19 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+	"strings"
+
+	"bwsf/src/config"
 	"bwsf/src/core"
 	"bwsf/src/infra"
 	"bwsf/src/utils"
-	"os"
 
 	"github.com/spf13/cobra"
 )
+
+var setupFolder string
 
 var setupCmd = &cobra.Command{
 	Use:   "setup",
@@ -17,6 +23,7 @@ var setupCmd = &cobra.Command{
 }
 
 func init() {
+	setupCmd.Flags().StringVar(&setupFolder, "folder", "", "Bitwarden folder name for .env notes (default: dotenvs)")
 	rootCmd.AddCommand(setupCmd)
 }
 
@@ -28,6 +35,38 @@ func runSetup(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
+	folderName := config.DefaultFolderName
+
+	// Persist --folder before core setup so RealBwClient reads it for folder ops.
+	if setupFolder != "" {
+		if err := config.ValidateFolderName(setupFolder); err != nil {
+			utils.Errorln("[ERROR]", err)
+			os.Exit(1)
+		}
+		folderName = strings.TrimSpace(setupFolder)
+
+		cfg, err := config.LoadConfig()
+		if err != nil {
+			utils.Errorln("[ERROR] Failed to load config:", err)
+			os.Exit(1)
+		}
+		if cfg == nil {
+			cfg = &config.Config{}
+		}
+		cfg.FolderName = folderName
+		if err := config.SaveConfig(cfg); err != nil {
+			utils.Errorln("[ERROR] Failed to save folder name:", err)
+			os.Exit(1)
+		}
+	} else {
+		cfg, err := config.LoadConfig()
+		if err != nil {
+			utils.Errorln("[ERROR] Failed to load config:", err)
+			os.Exit(1)
+		}
+		folderName = config.ResolveFolderName(cfg)
+	}
+
 	// Create dependencies
 	bw := infra.NewBwClient()
 	fs := infra.NewFileSystem()
@@ -35,7 +74,7 @@ func runSetup(cmd *cobra.Command, args []string) {
 
 	// confirmCreateFolder wrapper
 	confirmCreateFolder := func() (bool, error) {
-		return utils.ConfirmYesNo("dotenvs folder not found. Create it? (y/N): ")
+		return utils.ConfirmYesNo(fmt.Sprintf("%s folder not found. Create it? (y/N): ", folderName))
 	}
 
 	// Call core logic

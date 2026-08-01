@@ -94,6 +94,14 @@ bwsf setup
 
 Set up your Bitwarden host and your account information.
 
+By default, `.env` notes are stored in a Bitwarden folder named `dotenvs`. To use a different folder name:
+
+```shell
+bwsf setup --folder my-envs
+```
+
+The folder name is saved in `~/.config/bwsf/config.json` and used by push / pull / list. Changing the folder name does **not** move existing notes; move them manually in Bitwarden if needed.
+
 ### Pull .env file from Bitwarden host
 
 ```shell
@@ -109,7 +117,7 @@ The data is stored as Bitwarden's Note item.
 ### Push .env file to Bitwarden host
 
 bwsf pushs your .env data at the current directory to your Bitwarden host.
-If it exists same name Bitwarden's Note item in dotenvs folder, bwsf asks overwrite it or not.
+If it exists same name Bitwarden's Note item in the configured folder (default: `dotenvs`), bwsf asks overwrite it or not.
 
 ### List up .env datas in Bitwarden host
 
