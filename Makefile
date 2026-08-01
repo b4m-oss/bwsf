@@ -1,4 +1,4 @@
-.PHONY: help build up down run shell clean test test-unit test-e2e fmt vet lint
+.PHONY: help build up down run shell clean test test-unit test-e2e fmt vet lint deps-outdated
 
 # 変数定義
 APP_DIR := app
@@ -51,6 +51,9 @@ vet: ## コードを静的解析
 	cd $(APP_DIR) && docker compose run --rm golang go vet ./...
 
 lint: fmt vet ## フォーマットと静的解析を実行
+
+deps-outdated: ## 古い依存パッケージを確認
+	cd $(APP_DIR) && docker compose run --rm golang go list -m -u all
 
 # ========================================
 # クリーンアップ

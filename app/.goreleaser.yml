@@ -1,6 +1,6 @@
 version: 2
 
-project_name: bwenv
+project_name: bwsf
 
 before:
   hooks:
@@ -8,7 +8,7 @@ before:
 
 builds:
   - main: ./src/main.go
-    binary: bwenv
+    binary: bwsf
     env:
       - CGO_ENABLED=0
     goos:
@@ -51,10 +51,10 @@ brews:
       owner: b4m-oss
       name: tap
       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
-    homepage: https://github.com/b4m-oss/bwenv
+    homepage: https://github.com/b4m-oss/bwsf
     description: CLI tool to manage .env files with Bitwarden
     license: MIT
     install: |
-      bin.install "bwenv"
+      bin.install "bwsf"
     test: |
-      system "#{bin}/bwenv", "--help"
+      system "#{bin}/bwsf", "--help"

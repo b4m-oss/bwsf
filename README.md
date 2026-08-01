@@ -57,7 +57,7 @@ This project migrates our hand-maded shell scripts to modern CLI command with Go
 
 [To install bw command, please read this document.](https://bitwarden.com/help/cli/#download-and-install)
 
-**Homebrew**: Need to install bwenv.
+**Homebrew**: Need to install bwsf.
 
 ### Machine OS
 
@@ -69,21 +69,16 @@ This project migrates our hand-maded shell scripts to modern CLI command with Go
 
 | OS | command |
 |----|----|
-<<<<<<< HEAD
-| macOS | brew tap b4m-oss/tap && brew install bwenv |
-| Linux | brew tap b4m-oss/tap && brew install bwenv |
-=======
 | macOS | brew tap b4m-oss/tap && brew install bwsf |
 | Linux | brew tap b4m-oss/tap && brew install bwsf |
 
 > Note: Linux requires [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux) to be installed first.
->>>>>>> 5b69e604fa9a5a7b17e096c8c86d8778a30fd442
 
 ## Verify installation
 
 ```shell
-bwenv -v
-# bwenv version 0.5.5
+bwsf -v
+# bwsf version 0.11.2
 ```
 
 ## Usage
@@ -133,7 +128,7 @@ brew uninstall bwsf
 <details>
 <summary>Q. I don't have Bitwarden account.</summary>
 
-To use bwenv, you need a Bitwarden account.
+To use bwsf, you need a Bitwarden account.
 
 You can access to [Bitwarden Cloud](https://bitwarden.com/), sign up a account.
 
@@ -144,7 +139,7 @@ No fee, No credit card.
 <details>
 <summary>Q. I'm Bitwarden self hosted user.</summary>
 
-Ofcourse, bwenv is available for Bitwarden self hosted users.
+Ofcourse, bwsf is available for Bitwarden self hosted users.
 
 You can input your self hosted URL when initial setup.
 
@@ -153,14 +148,14 @@ You can input your self hosted URL when initial setup.
 <details>
 <summary>Q. How does my .env file store at Bitwarden host?</summary>
 
-Your .env files are converted to JSON syntax. bwenv creates Bitwarden Note item, put into Note section to JSON.
+Your .env files are converted to JSON syntax. bwsf creates Bitwarden Note item, put into Note section to JSON.
 
 </details>
 
 <details>
 <summary>Q. Where are my Bitwarden account info</summary>
 
-bwenv stores your config data at `~/.config/bwenv/`.
+bwsf stores your config data at `~/.config/bwsf/`.
 
 But, secure information (ex. password) is never stored.
 
@@ -175,8 +170,8 @@ But, secure information (ex. password) is never stored.
 ### Start up to dev
 
 ```
-git clone https://github.com/b4m-oss/bwenv.git
-cd bwenv
+git clone https://github.com/b4m-oss/bwsf.git
+cd bwsf
 make run
 ```
 

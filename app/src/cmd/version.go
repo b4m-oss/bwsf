@@ -1,5 +1,4 @@
 package cmd
 
-// Version is the current version of bwenv
-const Version = "0.10.1"
-
+// Version is the current version of bwsf
+const Version = "0.11.2"

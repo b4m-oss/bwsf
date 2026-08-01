@@ -1,6 +1,6 @@
-# Contributing to bwenv
+# Contributing to bwsf
 
-Thank you for your interest in contributing to bwenv! We welcome contributions from the community.
+Thank you for your interest in contributing to bwsf! We welcome contributions from the community.
 
 ## Code of Conduct
 
@@ -21,8 +21,8 @@ Before you begin, ensure you have the following installed:
 2. Clone your fork:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/bwenv.git
-cd bwenv
+git clone https://github.com/YOUR_USERNAME/bwsf.git
+cd bwsf
 ```
 
 3. Build the Docker image:
@@ -126,18 +126,18 @@ We use **Issues** for bug reports and **Discussions** for feature requests and q
 
 ### Bug Reports (Issues)
 
-Found a bug? Please [open an Issue](https://github.com/b4m-oss/bwenv/issues/new/choose) using the bug report template.
+Found a bug? Please [open an Issue](https://github.com/b4m-oss/bwsf/issues/new/choose) using the bug report template.
 
 The template will guide you through providing:
 
 - Steps to reproduce the issue
 - Expected vs actual behavior
-- Your environment (OS, bwenv version, bw CLI version)
+- Your environment (OS, bwsf version, bw CLI version)
 - Error logs if applicable
 
 ### Feature Requests (Discussions)
 
-Have an idea for a new feature? Please use [GitHub Discussions](https://github.com/b4m-oss/bwenv/discussions/categories/ideas) instead of Issues.
+Have an idea for a new feature? Please use [GitHub Discussions](https://github.com/b4m-oss/bwsf/discussions/categories/ideas) instead of Issues.
 
 This allows the community to discuss and refine ideas before implementation.
 
@@ -157,7 +157,7 @@ Always run `make test` and `make lint` before submitting a PR.
 
 ## Questions?
 
-If you have any questions, please use [GitHub Discussions](https://github.com/b4m-oss/bwenv/discussions/categories/q-a) instead of opening an Issue.
+If you have any questions, please use [GitHub Discussions](https://github.com/b4m-oss/bwsf/discussions/categories/q-a) instead of opening an Issue.
 
 Thank you for contributing!
 

@@ -35,13 +35,6 @@ v0.8.0以前に保存されたデータは、v0.9.0以降では互換性があ�
 
 移行システムは提供しません。
 
-## 🚨🚨 破壊的変更 🚨🚨
-
-v0.9.0から、bwenvは`.env | .env.staging | .env.production`のような複数環境の.envファイルを保存するようになりました。
-これに伴い、BitwardenのNoteアイテムに保存されるデータ構造が変更されました。
-v0.8.0以前に保存されたデータは、v0.9.0以降との互換性がありません。
-マイグレーションシステムは提供されません。
-
 ## 概要
 
 bwsfコマンドは、Bitwardenで管理されているdotenvファイルをサポートします。
@@ -76,8 +69,94 @@ bwsfコマンドは、Bitwardenで管理されているdotenvファイルをサ�
 
 ## インストール
 
-[!Note]
-これは計画中です。
+| OS | コマンド |
+|----|----|
+| macOS / Linux| brew tap b4m-oss/tap && brew install bwsf |
+
+## インストールの確認
+
+```shell
+bwsf -v
+# bwsf version 0.11.2
+```
+
+## 使い方
+
+### 初期セットアップ
+
+```shell
+bwsf setup
+```
+
+Bitwardenホストとアカウント情報を設定します。
+
+### Bitwardenホストから.envファイルをプル
+
+```shell
+cd /path/to/your_project
+bwsf pull
+```
+
+bwsfはカレントディレクトリの名前を使用して、Bitwardenホスト内の.envデータを検索します。
+存在する場合、カレントディレクトリに.envファイルとしてデータをプルします。
+カレントディレクトリに既に.envファイルがある場合、bwsfは上書きするかどうかを確認します。
+データはBitwardenのNoteアイテムとして保存されます。
+
+### Bitwardenホストに.envファイルをプッシュ
+
+bwsfはカレントディレクトリの.envデータをBitwardenホストにプッシュします。
+dotenvフォルダに同じ名前のBitwardenのNoteアイテムが存在する場合、bwsfは上書きするかどうかを確認します。
+
+### Bitwardenホストの.envデータ一覧
+
+```shell
+bwsf list
+```
+
+Bitwardenホストから.envデータの一覧を取得します。
+プロジェクト名のリストが標準出力に表示されます。
+
+## アンインストール
+
+```shell
+brew uninstall bwsf
+```
+
+## FAQ
+
+<details>
+<summary>Q. Bitwardenアカウントを持っていません。</summary>
+
+bwsfを使用するには、Bitwardenアカウントが必要です。
+
+[Bitwarden Cloud](https://bitwarden.com/)にアクセスして、アカウントを登録できます。
+
+無料で、クレジットカードも不要です。
+
+</details>
+
+<details>
+<summary>Q. Bitwardenのセルフホストユーザーです。</summary>
+
+もちろん、bwsfはBitwardenのセルフホストユーザーでも利用可能です。
+
+初期セットアップ時にセルフホストのURLを入力できます。
+
+</details>
+
+<details>
+<summary>Q. .envファイルはBitwardenホストにどのように保存されますか？</summary>
+
+.envファイルはJSON形式に変換されます。bwsfはBitwardenのNoteアイテムを作成し、NoteセクションにそのJSONを保存します。
+
+</details>
+
+<details>
+<summary>Q. Bitwardenのアカウント情報はどこに保存されますか？</summary>
+
+bwsfは設定データを`~/.config/bwsf/`に保存します。
+
+ただし、セキュリティ情報（パスワードなど）は一切保存されません。
 
 - **macOS & Linux**: Homebrew
 - **Windows**: Chocolaty
@@ -91,8 +170,8 @@ bwsfコマンドは、Bitwardenで管理されているdotenvファイルをサ�
 ### 開発環境の起動
 
 ```
-git clone https://github.com/b4m-oss/bwenv.git
-cd bwenv
+git clone https://github.com/b4m-oss/bwsf.git
+cd bwsf
 make run
 ```
 

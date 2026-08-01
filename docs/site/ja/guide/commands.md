@@ -24,7 +24,7 @@ bwsf setup
 
 ## bwsf push
 
-現在のディレクトリから `.env` ファイルを Bitwarden ボールトにプッシュします。
+現在のディレクトリから `.env` ファイルを Bitwarden 保管庫 にプッシュします。
 
 ```bash
 cd /path/to/your_project
