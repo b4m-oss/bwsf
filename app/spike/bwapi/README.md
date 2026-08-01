@@ -66,13 +66,14 @@ export BWSF_SPIKE_EMAIL='you@example.com'
 export BWSF_SPIKE_PASSWORD='…'
 # 任意: export BWSF_SPIKE_SERVER_URL='https://your-server'
 # 任意: export BWSF_SPIKE_TOTP='123456'
-./run.sh run .
-# または: make run
+./run.sh
+# または: make run / ./run.sh run .
 
 # Scenario B（ライブ）
 export BWSF_SPIKE_CLIENT_ID='user.…'
 export BWSF_SPIKE_CLIENT_SECRET='…'
-./run.sh run . apikey
+./run.sh apikey
+# または: ./run.sh run . apikey
 ```
 
 手動で同じことをする場合（このマシンで確認済み）:
@@ -110,7 +111,7 @@ stdout に次が揃うこと:
 
 ### Scenario B
 
-- Identity `POST …/connect/token`（`grant_type=client_credentials`, `scope=api`）で **`access_token` 取得**
+- Identity `POST …/connect/token`（`grant_type=client_credentials`, `scope=api` + device メタ）で **`access_token` 取得**
 - vault CRUD は不要
 - SDK に API Key ログインが無いため、スパイクは raw HTTP でプローブする
 
@@ -144,22 +145,25 @@ stdout に次が揃うこと:
 
 よくある原因（このスパイクで確認済み）:
 
-1. **`deviceName` 未送信** — Vaultwarden は `/identity/connect/token` で `device_name cannot be blank` を返す。  
-   公式 cloud より厳しい。スパイクは常に `DeviceName` / `DeviceType` / `DeviceIdentifier` を付ける。
+1. **デバイスメタ未送信** — Vaultwarden は `/identity/connect/token` で空白を拒否する。  
+   - Scenario A（password）: `device_name cannot be blank`  
+   - Scenario B（`client_credentials`）: `device_identifier cannot be blank`（続けて name / type も必須）  
+   公式 cloud より厳しい。スパイクは常に `deviceIdentifier` / `deviceName` / `deviceType` を付ける（A は SDK `LoginOptions`、B は raw form）。
 2. **SDK がボディを捨てる** — VW の 400 JSON は `"error":""`（空文字）になりがちで、SDK は OAuth の `error` が空だと `KindUnknown` + `status=400` だけにする。本物の理由は `message` / `errorModel.message` 側。
 3. **認証失敗も同じ opaque 400** — パスワード不正時も VW は同様の形のため、SDK 上は `unknown status=400` に見えることがある。
 
 失敗時のスパイク出力:
 
 - 導出済み `identity` / `api` URL
-- SDK `Error` の kind / status / code / message
-- パスワードを使わない diagnose POST（`deviceName` あり／なし）でレスポンスボディ例を表示
+- SDK `Error` の kind / status / code / message（Scenario A）
+- パスワードを使わない diagnose POST（`deviceName` あり／なし）でレスポンスボディ例を表示（Scenario A）
+- Scenario B は raw HTTP のため、失敗時にレスポンスボディをそのまま表示
 
 ### VW API 不一致 vs 設定ミス
 
 | 症状 | 解釈 |
 |------|------|
-| prelogin 200、token で `device_name cannot be blank` | **設定／クライアント側**（デバイスメタ不足）。修正可能 |
+| prelogin 200、token で `device_name` / `device_identifier cannot be blank` | **設定／クライアント側**（デバイスメタ不足）。修正可能 |
 | prelogin / identity が 404 | ベース URL 誤り、またはリバースプロキシで `/identity` が届いていない |
 | token が常に opaque 400 で diagnose も意味不明 | **VW と SDK の API 差**の可能性。Issue に diagnose 全文を貼る |
 
@@ -179,7 +183,7 @@ stdout に次が揃うこと:
 
 - **Personal API Key:** `bitwarden-go-sdk` v0.4.0 に client_credentials / API Key ログイン API なし → Scenario B は raw HTTP。
 - **Vaultwarden:** README で non-goal。加えて **HTTPS 必須**（ローカル HTTP VW はそのままでは `NewClient(WithServerURL)` 不可）。
-- **deviceName 必須 (VW):** SDK は `LoginOptions.DeviceName` が空だと form に載せない。VW は 400 `device_name cannot be blank`。スパイクは固定デバイスメタを送る。
+- **device メタ必須 (VW):** password / client_credentials とも `deviceIdentifier`・`deviceName`・`deviceType` が必要。SDK は `LoginOptions` が空だと form に載せない。スパイクは固定デバイスメタを送る。
 - **opaque 400:** VW の token エラー JSON は `"error":""` が多く、SDK がボディを捨てて `unknown status=400` になる。失敗時は diagnose 出力を参照。
 - **2FA:** `CompleteLogin` + `TwoFactorProviderAuthenticator`。他プロバイダは要コード変更。
 - alpha API は破壊的変更があり得る。

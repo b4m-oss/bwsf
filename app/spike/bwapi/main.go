@@ -307,18 +307,26 @@ func runScenarioB(ctx context.Context) error {
 	tokenURL := strings.TrimRight(identityBase, "/") + "/connect/token"
 	fmt.Printf("SDK gap: bitwarden-go-sdk v0.4.0 has no Personal API Key / client_credentials login.\n")
 	fmt.Printf("Probing raw HTTP POST %s\n", tokenURL)
+	fmt.Printf("Device metadata: deviceName=%s deviceType=%s deviceIdentifier=%s\n",
+		spikeDeviceName, spikeDeviceType, spikeDeviceIdentifier)
 
+	// Vaultwarden requires device_* on client_credentials (same as password grant).
+	// Form names match Bitwarden CLI / Scenario A (camelCase; VW also accepts snake_case).
 	form := url.Values{}
 	form.Set("grant_type", "client_credentials")
 	form.Set("client_id", clientID)
 	form.Set("client_secret", clientSecret)
 	form.Set("scope", "api")
+	form.Set("deviceIdentifier", spikeDeviceIdentifier)
+	form.Set("deviceName", spikeDeviceName)
+	form.Set("deviceType", spikeDeviceType)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, tokenURL, strings.NewReader(form.Encode()))
 	if err != nil {
 		return fmt.Errorf("build request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Accept", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {

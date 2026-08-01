@@ -7,7 +7,7 @@ build:
 	./run.sh build -o /tmp/bwapi .
 
 run:
-	./run.sh run .
+	./run.sh
 
 tidy:
 	./run.sh mod tidy
