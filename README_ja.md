@@ -1,5 +1,8 @@
 # bwsf
 
+[![Test](https://github.com/b4m-oss/bwsf/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/b4m-oss/bwsf/actions/workflows/test.yml)
+[![Release](https://img.shields.io/github/v/release/b4m-oss/bwsf)](https://github.com/b4m-oss/bwsf/releases/latest)
+
 bwsf（Bitwarden Secured Files）は、[Bitwarden](https://bitwarden.com/)を使用して.envファイルを管理するCLIツールです。
 
 [English version is here.](./README.md)
@@ -77,7 +80,7 @@ bwsfコマンドは、Bitwardenで管理されているdotenvファイルをサ�
 
 ```shell
 bwsf -v
-# bwsf version 0.11.1
+# bwsf version 0.11.2
 ```
 
 ## 使い方
@@ -89,6 +92,14 @@ bwsf setup
 ```
 
 Bitwardenホストとアカウント情報を設定します。
+
+デフォルトでは、`.env` ノートは Bitwarden の `dotenvs` フォルダに保存されます。別のフォルダ名を使う場合:
+
+```shell
+bwsf setup --folder my-envs
+```
+
+フォルダ名は `~/.config/bwsf/config.json` に保存され、push / pull / list で参照されます。フォルダ名を変更しても既存ノートは自動では移動しません。必要なら Bitwarden 上で手動移動してください。
 
 ### Bitwardenホストから.envファイルをプル
 
@@ -105,7 +116,7 @@ bwsfはカレントディレクトリの名前を使用して、Bitwardenホス�
 ### Bitwardenホストに.envファイルをプッシュ
 
 bwsfはカレントディレクトリの.envデータをBitwardenホストにプッシュします。
-dotenvフォルダに同じ名前のBitwardenのNoteアイテムが存在する場合、bwsfは上書きするかどうかを確認します。
+dotenvフォルダ（デフォルト: `dotenvs`）に同じ名前のBitwardenのNoteアイテムが存在する場合、bwsfは上書きするかどうかを確認します。
 
 ### Bitwardenホストの.envデータ一覧
 
@@ -158,7 +169,8 @@ bwsfは設定データを`~/.config/bwsf/`に保存します。
 
 ただし、セキュリティ情報（パスワードなど）は一切保存されません。
 
-</details>
+- **macOS & Linux**: Homebrew
+- **Windows**: Chocolaty
 
 ## 開発
 
