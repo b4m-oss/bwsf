@@ -19,7 +19,7 @@ func NewBwClientFromConfig(cfg *config.Config) (core.BwClient, error) {
 	case config.BackendBW:
 		return NewBwClient(), nil
 	case config.BackendAPI:
-		return NewApiBwClient(), nil
+		return NewApiBwClient(cfg), nil
 	default:
 		return nil, fmt.Errorf("unsupported backend %q: use %q or %q", backend, config.BackendBW, config.BackendAPI)
 	}

@@ -167,6 +167,35 @@ func TestBackendCmd_Description(t *testing.T) {
 	assert.NotEmpty(t, backendCmd.Long)
 }
 
+// 正常系: auth コマンドが登録されている
+func TestAuthCmd_Registered(t *testing.T) {
+	assert.NotNil(t, authCmd)
+	assert.Equal(t, "auth", authCmd.Use)
+
+	found := false
+	for _, cmd := range rootCmd.Commands() {
+		if cmd.Use == "auth" {
+			found = true
+			break
+		}
+	}
+	assert.True(t, found, "auth command should be registered")
+}
+
+// 正常系: auth コマンドに --clear フラグがある
+func TestAuthCmd_ClearFlag(t *testing.T) {
+	flag := authCmd.Flags().Lookup("clear")
+	assert.NotNil(t, flag)
+	assert.Equal(t, "false", flag.DefValue)
+}
+
+// 正常系: auth コマンドに説明がある
+func TestAuthCmd_Description(t *testing.T) {
+	assert.NotEmpty(t, authCmd.Short)
+	assert.NotEmpty(t, authCmd.Long)
+}
+
+
 // =============================================================================
 // backend コマンドのロジックテスト
 // =============================================================================
