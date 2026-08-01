@@ -547,26 +547,33 @@ func SetupBitwardenCore(
 		return fmt.Errorf("failed to login: %w", err)
 	}
 
-	// 設定を保存
+	// 設定を保存（folder_name は既存値を維持。setup --folder で事前保存された値を含む）
+	folderName := ""
+	if existingConfig != nil {
+		folderName = existingConfig.FolderName
+	}
 	newConfig := &config.Config{
 		HostType:      hostType,
 		SelfhostedURL: selfhostedURL,
 		Email:         email,
+		FolderName:    folderName,
 	}
 	if err := config.SaveConfig(newConfig); err != nil {
 		return fmt.Errorf("failed to save configuration: %w", err)
 	}
 
-	// dotenvs フォルダの存在確認
+	resolvedFolder := config.ResolveFolderName(newConfig)
+
+	// 設定フォルダの存在確認
 	exists, err := bw.DotenvsFolderExists()
 	if err != nil {
 		// エラーが発生した場合はログを出力して続行（致命的ではない）
-		logger.Info("Could not check dotenvs folder: ", err.Error())
+		logger.Info("Could not check ", resolvedFolder, " folder: ", err.Error())
 		return nil
 	}
 
 	if !exists {
-		// dotenvs フォルダがない場合、作成するか確認
+		// フォルダがない場合、作成するか確認
 		confirmed, confirmErr := confirmCreateFolder()
 		if confirmErr != nil {
 			return fmt.Errorf("failed to confirm folder creation: %w", confirmErr)
@@ -575,9 +582,9 @@ func SetupBitwardenCore(
 		if confirmed {
 			// フォルダを作成
 			if createErr := bw.CreateDotenvsFolder(); createErr != nil {
-				return fmt.Errorf("failed to create dotenvs folder: %w", createErr)
+				return fmt.Errorf("failed to create %s folder: %w", resolvedFolder, createErr)
 			}
-			logger.Info("dotenvs folder created successfully")
+			logger.Info(resolvedFolder, " folder created successfully")
 		}
 	}
 

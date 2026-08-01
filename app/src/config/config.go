@@ -5,18 +5,43 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type Config struct {
-	HostType      string `json:"host_type"`      // "cloud" or "selfhosted"
-	SelfhostedURL string `json:"selfhosted_url"` // URL for self-hosted instance
-	Email         string `json:"email"`          // Email address
+	HostType      string `json:"host_type"`             // "cloud" or "selfhosted"
+	SelfhostedURL string `json:"selfhosted_url"`        // URL for self-hosted instance
+	Email         string `json:"email"`                 // Email address
+	FolderName    string `json:"folder_name,omitempty"` // Bitwarden folder for .env notes
 }
 
 const (
 	configDir  = ".config/bwsf"
 	configFile = "config.json"
+
+	// DefaultFolderName is the Bitwarden folder used when folder_name is unset.
+	DefaultFolderName = "dotenvs"
 )
+
+// ResolveFolderName returns the configured folder name, or DefaultFolderName when empty.
+func ResolveFolderName(cfg *Config) string {
+	if cfg == nil {
+		return DefaultFolderName
+	}
+	name := strings.TrimSpace(cfg.FolderName)
+	if name == "" {
+		return DefaultFolderName
+	}
+	return name
+}
+
+// ValidateFolderName rejects empty or whitespace-only folder names.
+func ValidateFolderName(name string) error {
+	if strings.TrimSpace(name) == "" {
+		return fmt.Errorf("folder name must not be empty")
+	}
+	return nil
+}
 
 // GetConfigPath returns the full path to the config file
 func GetConfigPath() (string, error) {
