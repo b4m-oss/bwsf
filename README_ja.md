@@ -158,7 +158,8 @@ bwsfは設定データを`~/.config/bwsf/`に保存します。
 
 ただし、セキュリティ情報（パスワードなど）は一切保存されません。
 
-</details>
+- **macOS & Linux**: Homebrew
+- **Windows**: Chocolaty
 
 ## 開発
 
