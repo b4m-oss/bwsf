@@ -77,7 +77,7 @@ bwsfコマンドは、Bitwardenで管理されているdotenvファイルをサ�
 
 ```shell
 bwsf -v
-# bwsf version 0.11.1
+# bwsf version 0.11.2
 ```
 
 ## 使い方
@@ -158,7 +158,8 @@ bwsfは設定データを`~/.config/bwsf/`に保存します。
 
 ただし、セキュリティ情報（パスワードなど）は一切保存されません。
 
-</details>
+- **macOS & Linux**: Homebrew
+- **Windows**: Chocolaty
 
 ## 開発
 
