@@ -21,15 +21,11 @@ func init() {
 }
 
 func runSetup(cmd *cobra.Command, args []string) {
-	// Check if bw command is installed
-	installed, _ := utils.CheckBwCommand()
-	if !installed {
-		utils.Errorln("[ERROR] ❌ bw command is not installed...")
-		os.Exit(1)
-	}
+	cfg := loadConfigOrEmpty()
+	requireBwCLIIfNeeded(cfg)
 
 	// Create dependencies
-	bw := infra.NewBwClient()
+	bw := newBwClientFromConfig(cfg)
 	fs := infra.NewFileSystem()
 	logger := infra.NewLogger()
 

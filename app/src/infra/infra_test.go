@@ -3,6 +3,9 @@ package infra
 import (
 	"testing"
 
+	"bwsf/src/config"
+	"bwsf/src/core"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -93,6 +96,76 @@ func TestUnlockError_ImplementsError(t *testing.T) {
 
 	assert.Equal(t, "unlock failed", err.Error())
 }
+
+// =============================================================================
+// NewBwClientFromConfig / ApiBwClient のテスト
+// =============================================================================
+
+// 正常系: nil / 未設定 config では CLI (bw) アダプタが選ばれる
+func TestNewBwClientFromConfig_DefaultBW(t *testing.T) {
+	client, err := NewBwClientFromConfig(nil)
+	assert.NoError(t, err)
+	assert.IsType(t, &RealBwClient{}, client)
+
+	client, err = NewBwClientFromConfig(&config.Config{})
+	assert.NoError(t, err)
+	assert.IsType(t, &RealBwClient{}, client)
+
+	client, err = NewBwClientFromConfig(&config.Config{Backend: config.BackendBW})
+	assert.NoError(t, err)
+	assert.IsType(t, &RealBwClient{}, client)
+}
+
+// 正常系: backend=api では stub アダプタが選ばれる
+func TestNewBwClientFromConfig_API(t *testing.T) {
+	client, err := NewBwClientFromConfig(&config.Config{Backend: config.BackendAPI})
+	assert.NoError(t, err)
+	assert.IsType(t, &ApiBwClient{}, client)
+}
+
+// 異常系: 不明な backend はエラー
+func TestNewBwClientFromConfig_Unsupported(t *testing.T) {
+	client, err := NewBwClientFromConfig(&config.Config{Backend: "unknown"})
+	assert.Error(t, err)
+	assert.Nil(t, client)
+	assert.Contains(t, err.Error(), "unsupported backend")
+}
+
+// 正常系: ApiBwClient の各メソッドは not implemented エラーを返す
+func TestApiBwClient_NotImplemented(t *testing.T) {
+	client := NewApiBwClient()
+
+	_, err := client.GetDotenvsFolderID()
+	assert.ErrorIs(t, err, ErrAPINotImplemented)
+
+	_, err = client.DotenvsFolderExists()
+	assert.ErrorIs(t, err, ErrAPINotImplemented)
+
+	assert.ErrorIs(t, client.CreateDotenvsFolder(), ErrAPINotImplemented)
+
+	_, err = client.ListItemsInFolder("id")
+	assert.ErrorIs(t, err, ErrAPINotImplemented)
+
+	_, err = client.GetItemByName("id", "name")
+	assert.ErrorIs(t, err, ErrAPINotImplemented)
+
+	_, err = client.GetItemByID("id")
+	assert.ErrorIs(t, err, ErrAPINotImplemented)
+
+	assert.ErrorIs(t, client.CreateNoteItem("id", "n", "notes"), ErrAPINotImplemented)
+	assert.ErrorIs(t, client.UpdateNoteItem("id", "notes"), ErrAPINotImplemented)
+	assert.ErrorIs(t, client.Login("e", "p", ""), ErrAPINotImplemented)
+	assert.ErrorIs(t, client.Unlock("p"), ErrAPINotImplemented)
+
+	assert.Contains(t, ErrAPINotImplemented.Error(), "Issue #53")
+	assert.Contains(t, ErrAPINotImplemented.Error(), "bwsf backend --set bw")
+}
+
+// 正常系: ApiBwClient が BwClient インターフェースを実装している
+func TestApiBwClient_ImplementsInterface(t *testing.T) {
+	var _ core.BwClient = NewApiBwClient()
+}
+
 
 // =============================================================================
 // realFileInfo のテスト

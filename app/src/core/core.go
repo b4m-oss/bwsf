@@ -547,11 +547,14 @@ func SetupBitwardenCore(
 		return fmt.Errorf("failed to login: %w", err)
 	}
 
-	// 設定を保存
+	// 設定を保存（既存の backend 設定は維持）
 	newConfig := &config.Config{
 		HostType:      hostType,
 		SelfhostedURL: selfhostedURL,
 		Email:         email,
+	}
+	if existingConfig != nil {
+		newConfig.Backend = existingConfig.Backend
 	}
 	if err := config.SaveConfig(newConfig); err != nil {
 		return fmt.Errorf("failed to save configuration: %w", err)

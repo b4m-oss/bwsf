@@ -63,6 +63,8 @@ func TestLoadConfig_Success(t *testing.T) {
 	assert.Equal(t, "selfhosted", cfg.HostType)
 	assert.Equal(t, "https://bw.example.com", cfg.SelfhostedURL)
 	assert.Equal(t, "test@example.com", cfg.Email)
+	assert.Equal(t, "", cfg.Backend)
+	assert.Equal(t, BackendBW, cfg.GetBackend())
 }
 
 // 異常系: JSON が壊れている場合はエラー
@@ -169,6 +171,73 @@ func TestSaveConfig_Overwrite(t *testing.T) {
 	assert.Equal(t, "selfhosted", loaded.HostType)
 	assert.Equal(t, "https://new.example.com", loaded.SelfhostedURL)
 	assert.Equal(t, "new@example.com", loaded.Email)
+}
+
+// =============================================================================
+// Backend フィールドのテスト
+// =============================================================================
+
+// 正常系: backend 未設定時は GetBackend が "bw" を返す
+func TestGetBackend_DefaultBW(t *testing.T) {
+	assert.Equal(t, BackendBW, (*Config)(nil).GetBackend())
+	assert.Equal(t, BackendBW, (&Config{}).GetBackend())
+	assert.Equal(t, BackendBW, (&Config{Backend: ""}).GetBackend())
+}
+
+// 正常系: backend が明示されている場合はその値を返す
+func TestGetBackend_Explicit(t *testing.T) {
+	assert.Equal(t, BackendAPI, (&Config{Backend: BackendAPI}).GetBackend())
+	assert.Equal(t, BackendBW, (&Config{Backend: BackendBW}).GetBackend())
+}
+
+// 正常系: IsValidBackend が bw / api のみ true
+func TestIsValidBackend(t *testing.T) {
+	assert.True(t, IsValidBackend(BackendBW))
+	assert.True(t, IsValidBackend(BackendAPI))
+	assert.False(t, IsValidBackend(""))
+	assert.False(t, IsValidBackend("cli"))
+}
+
+// 正常系: backend 付き config の読み書き
+func TestLoadSaveConfig_WithBackend(t *testing.T) {
+	origHome := os.Getenv("HOME")
+	tmpDir := t.TempDir()
+	os.Setenv("HOME", tmpDir)
+	defer os.Setenv("HOME", origHome)
+
+	cfg := &Config{
+		HostType: "cloud",
+		Email:    "user@example.com",
+		Backend:  BackendAPI,
+	}
+	err := SaveConfig(cfg)
+	assert.NoError(t, err)
+
+	loaded, err := LoadConfig()
+	assert.NoError(t, err)
+	assert.Equal(t, BackendAPI, loaded.Backend)
+	assert.Equal(t, BackendAPI, loaded.GetBackend())
+
+	content, _ := os.ReadFile(filepath.Join(tmpDir, ".config", "bwsf", "config.json"))
+	assert.Contains(t, string(content), `"backend": "api"`)
+}
+
+// 正常系: backend 未指定の JSON でも読み込め、デフォルトは bw
+func TestLoadConfig_BackendOmitted(t *testing.T) {
+	origHome := os.Getenv("HOME")
+	tmpDir := t.TempDir()
+	os.Setenv("HOME", tmpDir)
+	defer os.Setenv("HOME", origHome)
+
+	configDir := filepath.Join(tmpDir, ".config", "bwsf")
+	os.MkdirAll(configDir, 0755)
+	configPath := filepath.Join(configDir, "config.json")
+	os.WriteFile(configPath, []byte(`{"host_type":"cloud","email":"a@b.com"}`), 0600)
+
+	cfg, err := LoadConfig()
+	assert.NoError(t, err)
+	assert.Equal(t, "", cfg.Backend)
+	assert.Equal(t, BackendBW, cfg.GetBackend())
 }
 
 
