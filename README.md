@@ -45,6 +45,7 @@ Simple usage below:
 | bwsf pull | .env files pull from your Bitwarden host |
 | bwsf list | Show list stored .env files at your Bitwarden host |
 | bwsf backend | Show or set Bitwarden backend (`bw` CLI or `api`) |
+| bwsf auth | Store Personal API Key and authenticate (`api` backend) |
 
 ## Motivation
 
@@ -126,7 +127,22 @@ bwsf backend --set bw
 bwsf backend --set api
 ```
 
-Default backend is `bw` (Bitwarden CLI). The `api` backend is experimental and not fully implemented yet.
+Default backend is `bw` (Bitwarden CLI). The `api` backend is experimental.
+
+### API backend authentication (Personal API Key)
+
+When using `backend=api`, authenticate with a Bitwarden **Personal API Key** (not the master password):
+
+```shell
+bwsf backend --set api
+bwsf auth
+```
+
+`bwsf auth` prompts for `client_id` / `client_secret`, stores them in the OS secret store (**macOS Keychain** / **Linux secret service**), and obtains an Identity access token (kept in memory for the process). Use `bwsf auth --clear` to remove the stored key.
+
+Create a Personal API Key in the Bitwarden web vault under Account Settings → Security → Keys.
+
+Vault unlock and push/pull over the API are not implemented yet; keep using `backend=bw` for day-to-day sync.
 
 ## Uninstall
 

@@ -47,6 +47,7 @@ bwsfコマンドは、Bitwardenで管理されているdotenvファイルをサ�
 | bwsf pull | Bitwardenホストから.envファイルをプル |
 | bwsf list | Bitwardenホストに保存されている.envファイルの一覧を表示 |
 | bwsf backend | Bitwardenバックエンド（`bw` CLI / `api`）の表示・設定 |
+| bwsf auth | Personal API Key の保存と認証（`api` バックエンド） |
 
 ## 動機
 
@@ -125,7 +126,22 @@ bwsf backend --set bw
 bwsf backend --set api
 ```
 
-デフォルトは `bw`（Bitwarden CLI）です。`api` バックエンドは実験的で、まだ完全には実装されていません。
+デフォルトは `bw`（Bitwarden CLI）です。`api` バックエンドは実験的です。
+
+### API バックエンド認証（Personal API Key）
+
+`backend=api` のときは、マスターパスワードではなく Bitwarden の **Personal API Key** で認証します。
+
+```shell
+bwsf backend --set api
+bwsf auth
+```
+
+`bwsf auth` は `client_id` / `client_secret` の入力を求め、OS の秘密保管（**macOS Keychain** / **Linux secret service**）に保存し、Identity のアクセストークンを取得します（トークンはプロセスのメモリ上のみ）。削除は `bwsf auth --clear` です。
+
+Personal API Key は Bitwarden Web 保管庫の アカウント設定 → セキュリティ → キー から作成できます。
+
+API 経由のボルト unlock や push/pull は未実装です。日常利用は当面 `backend=bw` を使ってください。
 
 ## アンインストール
 

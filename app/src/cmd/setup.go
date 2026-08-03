@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bwsf/src/config"
 	"bwsf/src/core"
 	"bwsf/src/infra"
 	"bwsf/src/utils"
@@ -22,6 +23,10 @@ func init() {
 
 func runSetup(cmd *cobra.Command, args []string) {
 	cfg := loadConfigOrEmpty()
+	if cfg.GetBackend() == config.BackendAPI {
+		utils.Infoln("[INFO] backend=api: use `bwsf auth` to store a Personal API Key and obtain an Identity token.")
+		utils.Infoln("[INFO] Continuing setup will still configure host/email for Identity URL resolution.")
+	}
 	requireBwCLIIfNeeded(cfg)
 
 	// Create dependencies

@@ -116,7 +116,7 @@ func TestNewBwClientFromConfig_DefaultBW(t *testing.T) {
 	assert.IsType(t, &RealBwClient{}, client)
 }
 
-// 正常系: backend=api では stub アダプタが選ばれる
+// 正常系: backend=api では API アダプタが選ばれる
 func TestNewBwClientFromConfig_API(t *testing.T) {
 	client, err := NewBwClientFromConfig(&config.Config{Backend: config.BackendAPI})
 	assert.NoError(t, err)
@@ -131,9 +131,13 @@ func TestNewBwClientFromConfig_Unsupported(t *testing.T) {
 	assert.Contains(t, err.Error(), "unsupported backend")
 }
 
-// 正常系: ApiBwClient の各メソッドは not implemented エラーを返す
+// 正常系: ApiBwClient の保管庫メソッドは not implemented、Unlock は Step 3 案内
 func TestApiBwClient_NotImplemented(t *testing.T) {
-	client := NewApiBwClient()
+	client := NewApiBwClientWithDeps(
+		&config.Config{Backend: config.BackendAPI},
+		NewMemorySecretStore(),
+		NewIdentityClient(),
+	)
 
 	_, err := client.GetDotenvsFolderID()
 	assert.ErrorIs(t, err, ErrAPINotImplemented)
@@ -154,8 +158,9 @@ func TestApiBwClient_NotImplemented(t *testing.T) {
 
 	assert.ErrorIs(t, client.CreateNoteItem("id", "n", "notes"), ErrAPINotImplemented)
 	assert.ErrorIs(t, client.UpdateNoteItem("id", "notes"), ErrAPINotImplemented)
-	assert.ErrorIs(t, client.Login("e", "p", ""), ErrAPINotImplemented)
-	assert.ErrorIs(t, client.Unlock("p"), ErrAPINotImplemented)
+
+	// Login without stored API key asks for bwsf auth
+	assert.ErrorIs(t, client.Login("e", "p", ""), ErrAPINotAuthenticated)
 
 	assert.Contains(t, ErrAPINotImplemented.Error(), "Issue #53")
 	assert.Contains(t, ErrAPINotImplemented.Error(), "bwsf backend --set bw")
@@ -163,7 +168,7 @@ func TestApiBwClient_NotImplemented(t *testing.T) {
 
 // 正常系: ApiBwClient が BwClient インターフェースを実装している
 func TestApiBwClient_ImplementsInterface(t *testing.T) {
-	var _ core.BwClient = NewApiBwClient()
+	var _ core.BwClient = NewApiBwClient(nil)
 }
 
 

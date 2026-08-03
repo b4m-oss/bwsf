@@ -8,10 +8,11 @@ import (
 )
 
 type Config struct {
-	HostType      string `json:"host_type"`      // "cloud" or "selfhosted"
-	SelfhostedURL string `json:"selfhosted_url"` // URL for self-hosted instance
-	Email         string `json:"email"`          // Email address
-	Backend       string `json:"backend,omitempty"` // "bw" (CLI) or "api"; default "bw" when unset
+	HostType          string `json:"host_type"`                    // "cloud" or "selfhosted"
+	SelfhostedURL     string `json:"selfhosted_url"`               // URL for self-hosted instance
+	Email             string `json:"email"`                        // Email address
+	Backend           string `json:"backend,omitempty"`            // "bw" (CLI) or "api"; default "bw" when unset
+	DeviceIdentifier  string `json:"device_identifier,omitempty"`  // Stable device id for Identity (api backend)
 }
 
 const (
